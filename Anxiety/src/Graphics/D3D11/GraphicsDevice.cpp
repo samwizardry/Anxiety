@@ -3,10 +3,11 @@
 #include "D3D11Utils.h"
 
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 
 namespace Anx {
 
-GraphicsDevice::GraphicsDevice(HWND hwnd, int width, int height, bool windowed)
+GraphicsDevice::GraphicsDevice(void* windowHandle, int width, int height, bool windowed)
 {
     UINT createDeviceFlags = 0;
 
@@ -51,10 +52,10 @@ GraphicsDevice::GraphicsDevice(HWND hwnd, int width, int height, bool windowed)
     scd.SampleDesc.Quality = 0;
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     scd.BufferCount = 2;
-    scd.Scaling = DXGI_SCALING_NONE;
+    scd.Scaling = DXGI_SCALING_STRETCH;
     scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     scd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-    scd.Flags = 0;
+    scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
     DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsd{};
     fsd.RefreshRate.Numerator = 0;
@@ -62,6 +63,8 @@ GraphicsDevice::GraphicsDevice(HWND hwnd, int width, int height, bool windowed)
     fsd.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     fsd.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     fsd.Windowed = windowed ? TRUE : FALSE;
+
+    HWND hwnd = static_cast<HWND>(windowHandle);
 
     ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
         _device.Get(),
@@ -192,7 +195,7 @@ void GraphicsDevice::ResizeSwapChain(int width, int height)
         static_cast<UINT>(width),
         static_cast<UINT>(height),
         DXGI_FORMAT_R8G8B8A8_UNORM,
-        0)
+        DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING)
     );
 
     CreateRenderTargetView();
@@ -203,7 +206,7 @@ void GraphicsDevice::ResizeSwapChain(int width, int height)
 
 void GraphicsDevice::Present()
 {
-    ThrowIfFailed(_swapChain->Present(0, 0));
+    ThrowIfFailed(_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
 }
 
 void GraphicsDevice::Clear(const float color[4])

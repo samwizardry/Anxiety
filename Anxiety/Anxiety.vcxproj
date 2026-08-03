@@ -11,14 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Graphics\GraphicsDevice.cpp" />
+    <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Graphics\D3D11\GraphicsDevice.cpp" />
+    <ClCompile Include="src\Graphics\D3D11\IndexBuffer.cpp" />
+    <ClCompile Include="src\Graphics\D3D11\Shader.cpp" />
+    <ClCompile Include="src\Graphics\D3D11\VertexBuffer.cpp" />
+    <ClCompile Include="src\Graphics\D3D11\VertexTypes.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Graphics\GraphicsDevice.h" />
-    <ClInclude Include="src\Graphics\D3D11Utils.h" />
-    <ClInclude Include="src\Graphics\VertexTypes.h" />
+    <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Core\StepTimer.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Graphics\D3D11\GraphicsDevice.h" />
+    <ClInclude Include="src\Graphics\D3D11\D3D11Utils.h" />
+    <ClInclude Include="src\Graphics\D3D11\IndexBuffer.h" />
+    <ClInclude Include="src\Graphics\D3D11\RHI.h" />
+    <ClInclude Include="src\Graphics\D3D11\Shader.h" />
+    <ClInclude Include="src\Graphics\D3D11\VertexBuffer.h" />
+    <ClInclude Include="src\Graphics\D3D11\VertexTypes.h" />
     <ClInclude Include="src\Graphics\Geometry.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>

@@ -1,11 +1,5 @@
 #pragma once
 
-//#include <d3d11.h>
-//#include <d3dcompiler.h>
-//#include <dxgi1_6.h>
-//#include <wrl.h>
-//#include <wrl/client.h>
-
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi1_6.h>
@@ -17,24 +11,26 @@ namespace Anx {
 class GraphicsDevice
 {
 public:
-    GraphicsDevice(HWND hwnd, int width, int height, bool windowed);
+    GraphicsDevice(void* windowHandle, int width, int height, bool windowed);
     ~GraphicsDevice();
 
-    GraphicsDevice(const GraphicsDevice&&) = delete;
-    GraphicsDevice& operator=(const GraphicsDevice&&) = delete;
+    GraphicsDevice(GraphicsDevice&&) = delete;
+    GraphicsDevice& operator=(GraphicsDevice&&) = delete;
 
     GraphicsDevice(const GraphicsDevice&) = delete;
     GraphicsDevice& operator=(const GraphicsDevice&) = delete;
 
+    inline ID3D11Device* GetDevice() { return _device.Get(); }
+    inline ID3D11DeviceContext* GetContext() { return _deviceContext.Get(); }
+
     void ResizeSwapChain(int width, int height);
+    void BindRenderTargetViewAndDepthStencilView();
     void Present();
     void Clear(const float color[4]);
-
 private:
     void CreateRenderTargetView();
     void CreateDepthStencilBufferAndView(int width, int height);
     void CreateRasterizerState();
-    void BindRenderTargetViewAndDepthStencilView();
     void SetViewports(int width, int height);
 
 private:

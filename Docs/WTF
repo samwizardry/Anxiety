@@ -1,0 +1,2 @@
+Установка каждый кадр _graphicsDevice->BindRenderTargetViewAndDepthStencilView();
+Из за того что меняется буфер, нужно установить новый рендер таргет на этот буфер?
