@@ -1,15 +1,17 @@
-#include "IndexBuffer.h"
+#include "stdafx.h"
 
-#include "D3D11Utils.h"
+#include "Buffer.h"
+
+#include "Utils.h"
 
 namespace Anx {
 
-IndexBuffer::IndexBuffer(GraphicsDevice* graphicsDevice, ResourceUsage usage, CpuAccessFlag cpuAccessFlags, const void* data, uint32_t size)
+Buffer::Buffer(GraphicsDevice* graphicsDevice, ResourceBindFlags bindFlags, ResourceUsage usage, CpuAccessFlag cpuAccessFlags, const void* data, uint32_t size)
 {
     D3D11_BUFFER_DESC bufferDesc;
     bufferDesc.ByteWidth = size;
     bufferDesc.Usage = ToD3D11Usage(usage);
-    bufferDesc.BindFlags = ToD3D11ResourceBindFlags(ResourceBindFlags::IndexBuffer);
+    bufferDesc.BindFlags = ToD3D11ResourceBindFlags(bindFlags);
     bufferDesc.CPUAccessFlags = ToD3D11CpuAccessFlags(cpuAccessFlags);
     bufferDesc.MiscFlags = 0;
     bufferDesc.StructureByteStride = 0;
@@ -26,7 +28,7 @@ IndexBuffer::IndexBuffer(GraphicsDevice* graphicsDevice, ResourceUsage usage, Cp
     );
 }
 
-IndexBuffer::~IndexBuffer()
+Buffer::~Buffer()
 {
 }
 

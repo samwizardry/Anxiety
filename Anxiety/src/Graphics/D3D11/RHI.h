@@ -3,7 +3,7 @@
 #include <d3d11.h>
 
 #include <cstdint>
-#include <exception>
+#include <stdexcept>
 
 namespace Anx {
 
@@ -399,7 +399,7 @@ inline DXGI_FORMAT ToDXGIFormat(Format format)
     case Format::SAMPLER_FEEDBACK_MIP_REGION_USED_OPAQUE: return DXGI_FORMAT_SAMPLER_FEEDBACK_MIP_REGION_USED_OPAQUE;
     case Format::A4B4G4R4_UNORM: return DXGI_FORMAT_A4B4G4R4_UNORM;
     case Format::FORCE_UINT: return DXGI_FORMAT_FORCE_UINT;
-    default: throw std::exception{ "Invalid format value." };
+    default: throw std::invalid_argument{ "Invalid format value." };
     }
 }
 
@@ -423,7 +423,7 @@ inline D3D11_USAGE ToD3D11Usage(ResourceUsage usage)
     case ResourceUsage::Immutable:  return D3D11_USAGE_IMMUTABLE;
     case ResourceUsage::Dynamic:    return D3D11_USAGE_DYNAMIC;
     case ResourceUsage::Staging:    return D3D11_USAGE_STAGING;
-    default: throw std::exception{ "Invalid resource usage value." };
+    default: throw std::invalid_argument{ "Invalid resource usage value." };
     }
 }
 
@@ -461,7 +461,7 @@ inline D3D11_INPUT_CLASSIFICATION ToD3D11InputClassification(InputClassification
     {
     case InputClassification::PerVertexData: return D3D11_INPUT_PER_VERTEX_DATA;
     case InputClassification::PerInstanceData: return D3D11_INPUT_PER_INSTANCE_DATA;
-    default: throw std::exception{ "Invalid input classification value." };
+    default: throw std::invalid_argument{ "Invalid input classification value." };
     }
 }
 

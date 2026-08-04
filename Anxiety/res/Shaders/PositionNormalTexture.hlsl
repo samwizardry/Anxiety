@@ -6,29 +6,27 @@ cbuffer cbPerObject : register(b0)
 struct VertexIn
 {
     float3 Pos : POSITION;
-    float4 Color : COLOR;
+    float3 Normal : NORMAL;
+    float2 TexCoord : TEXCOORD;
 };
 
 struct VertexOut
 {
     float4 Pos : SV_Position;
-    float4 Color : COLOR;
 };
 
 VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
 
-    // Transform to homogeneous clip space.
+    // Трансформируем только позицию
     vout.Pos = mul(float4(vin.Pos, 1.0f), g_worldViewProj);
-
-    // Just pass vertex color into the pixel shader.
-    vout.Color = vin.Color;
 
     return vout;
 }
 
 float4 PS(VertexOut pin) : SV_Target
 {
-    return pin.Color;
+    // Просто выводим белый цвет
+    return float4(1.0f, 1.0f, 1.0f, 1.0f);
 }

@@ -1,8 +1,7 @@
+#include "stdafx.h"
+
 #include "Game.h"
 
-#include <format>
-
-#include "Graphics/D3D11/D3D11Utils.h"
 #include "Graphics/D3D11/VertexTypes.h"
 #include "Graphics/Geometry.h"
 
@@ -19,23 +18,48 @@ Game::~Game()
 
 void Game::Startup()
 {
-    _posColShader = new Shader{ _graphicsDevice, L"E:\\dev\\samwizardry\\Anxiety\\Anxiety\\res\\Shaders\\PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
+    _posColShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
+    _posNormTexShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionNormalTexture.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
 
-    auto box = CreateBox(1.0f, 1.0f, 1.0f);
-    _cubeIndexCount = static_cast<uint32_t>(box.Indices.size());
+    std::vector<VertexPositionNormalTexture> vertices{};
+    std::vector<uint16_t> indices{};
 
-    _cubeVB = new VertexBuffer{ _graphicsDevice, ResourceUsage::Default, CpuAccessFlag::None, box.Vertices.data(),
-        static_cast<uint32_t>(sizeof(VertexPositionColor) * box.Vertices.size()) };
+    // Cube
 
-    _cubeIB = new IndexBuffer{ _graphicsDevice, ResourceUsage::Default, CpuAccessFlag::None, box.Indices.data(),
-        static_cast<uint32_t>(sizeof(uint32_t) * box.Indices.size()) };
+
+    //ComputeBox(vertices, indices, XMFLOAT3{ 1.0f, 1.0f, 1.0f }, false, false);
+
+    //_cubeIndexCount = static_cast<uint32_t>(indices.size());
+
+    //_cubeVB = new Buffer{ _graphicsDevice, ResourceBindFlags::VertexBuffer, ResourceUsage::Default, CpuAccessFlag::None, vertices.data(),
+    //    static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()) };
+
+    //_cubeIB = new Buffer{ _graphicsDevice, ResourceBindFlags::IndexBuffer, ResourceUsage::Default, CpuAccessFlag::None, indices.data(),
+    //    static_cast<uint32_t>(sizeof(uint16_t) * indices.size()) };
+
+    // Teapot
+
+    ComputeTeapot(vertices, indices, 2.0f, 5, false);
+
+    _tpIndexCount = static_cast<uint32_t>(indices.size());
+
+    _tpVB = new Buffer{ _graphicsDevice, ResourceBindFlags::VertexBuffer, ResourceUsage::Default, CpuAccessFlag::None, vertices.data(),
+        static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()) };
+
+    _tpIB = new Buffer{ _graphicsDevice, ResourceBindFlags::IndexBuffer, ResourceUsage::Default, CpuAccessFlag::None, indices.data(),
+        static_cast<uint32_t>(sizeof(uint16_t) * indices.size()) };
 }
 
 void Game::Cleanup()
 {
     delete _posColShader;
+    delete _posNormTexShader;
+
     delete _cubeVB;
     delete _cubeIB;
+
+    delete _tpVB;
+    delete _tpIB;
 }
 
 void Game::Update()
@@ -110,17 +134,35 @@ void Game::Render()
 
     auto context = _graphicsDevice->GetContext();
 
-    _posColShader->SetWorldViewProjection(XMLoadFloat4x4(&_cubeWorldViewProj));
-    _posColShader->Use();
+    //_posColShader->SetWorldViewProjection(XMLoadFloat4x4(&_cubeWorldViewProj));
+    //_posColShader->Use();
 
-    uint32_t stride = sizeof(VertexPositionColor);
+    _posNormTexShader->SetWorldViewProjection(XMLoadFloat4x4(&_cubeWorldViewProj));
+    _posNormTexShader->Use();
+
+    // Cube
+
+    //uint32_t stride = sizeof(VertexPositionNormalTexture);
+    //uint32_t offset = 0;
+
+    //auto cubeVB = _cubeVB->GetNativeBuffer();
+
+    //context->IASetVertexBuffers(0, 1, &cubeVB, &stride, &offset);
+    //context->IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(_cubeIB->GetNativeBuffer()), ToDXGIFormat(Format::R16_UINT), 0);
+
+    //context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //context->DrawIndexed(_cubeIndexCount, 0, 0);
+
+    // Teapot
+
+    uint32_t stride = sizeof(VertexPositionNormalTexture);
     uint32_t offset = 0;
 
-    auto cubeVB = _cubeVB->GetNativeBuffer();
+    auto tpVB = _tpVB->GetNativeBuffer();
 
-    context->IASetVertexBuffers(0, 1, &cubeVB, &stride, &offset);
-    context->IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(_cubeIB->GetNativeBuffer()), DXGI_FORMAT_R32_UINT, 0);
+    context->IASetVertexBuffers(0, 1, &tpVB, &stride, &offset);
+    context->IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(_tpIB->GetNativeBuffer()), ToDXGIFormat(Format::R16_UINT), 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    context->DrawIndexed(_cubeIndexCount, 0, 0);
+    context->DrawIndexed(_tpIndexCount, 0, 0);
 }

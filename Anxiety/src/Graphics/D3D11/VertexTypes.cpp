@@ -7,9 +7,9 @@
 // https://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#include "VertexTypes.h"
+#include "stdafx.h"
 
-#include <DirectXPackedVector.h>
+#include "VertexTypes.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;

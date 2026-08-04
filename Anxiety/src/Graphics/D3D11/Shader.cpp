@@ -1,8 +1,8 @@
+#include "stdafx.h"
+
 #include "Shader.h"
 
-#include <iostream>
-
-#include "D3D11Utils.h"
+#include "Utils.h"
 
 namespace Anx {
 
@@ -28,21 +28,20 @@ Shader::Shader(GraphicsDevice* graphicsDevice, const std::wstring& path, const V
         psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), nullptr, _pixelShader.GetAddressOf())
     );
 
-    D3D11_INPUT_ELEMENT_DESC* vertexLayoutDesc = new D3D11_INPUT_ELEMENT_DESC[numElements];
+    std::vector<D3D11_INPUT_ELEMENT_DESC> vertexLayoutDesc{};
+    vertexLayoutDesc.reserve(numElements);
 
     for (uint32_t i = 0; i < numElements; ++i)
     {
-        vertexLayoutDesc[i] = elements[i].ToD3D11InputElementDesc();
+        vertexLayoutDesc.push_back(elements[i].ToD3D11InputElementDesc());
     }
 
     ThrowIfFailed(_graphicsDevice->GetDevice()->CreateInputLayout(
-        vertexLayoutDesc, numElements,
+        vertexLayoutDesc.data(), numElements,
         vsBuffer->GetBufferPointer(),
         vsBuffer->GetBufferSize(),
         _vertexLayout.GetAddressOf())
     );
-
-    delete[] vertexLayoutDesc;
 
     D3D11_BUFFER_DESC matrixBufferDesc;
     matrixBufferDesc.ByteWidth = sizeof(DirectX::XMMATRIX);

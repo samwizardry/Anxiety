@@ -1,9 +1,8 @@
+#include "stdafx.h"
+
 #include "GraphicsDevice.h"
 
-#include "D3D11Utils.h"
-
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
+#include "Utils.h"
 
 namespace Anx {
 
@@ -206,7 +205,8 @@ void GraphicsDevice::ResizeSwapChain(int width, int height)
 
 void GraphicsDevice::Present()
 {
-    ThrowIfFailed(_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
+    //ThrowIfFailed(_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
+    ThrowIfFailed(_swapChain->Present(1, 0));
 }
 
 void GraphicsDevice::Clear(const float color[4])

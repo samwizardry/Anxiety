@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "Application.h"
 
 namespace Anx {
@@ -30,18 +32,10 @@ SDL_AppResult Application::Init()
         return SDL_APP_FAILURE;
     }
 
-    try
-    {
-        _graphicsDevice = new GraphicsDevice{
-            SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
-            width, height, true
-        };
-    }
-    catch (const std::exception& ex)
-    {
-        SDL_Log("GraphicsDevice initialization failed: %s", ex.what());
-        return SDL_APP_FAILURE;
-    }
+    _graphicsDevice = new GraphicsDevice{
+        SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
+        width, height, true
+    };
 
     SDL_ShowWindow(_window);
 
