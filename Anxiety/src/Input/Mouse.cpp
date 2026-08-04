@@ -50,6 +50,8 @@ void Mouse::SetFpsMode(bool isFps)
 
     _getMouseState = isFps ? SDL_GetRelativeMouseState : SDL_GetMouseState;
 
+    // Два вызова, так-как дельта не равна 0 при первом вызове, из-за накопительного эффекта
+    _currState = _getMouseState(nullptr, nullptr);
     _currState = _getMouseState(&_x, &_y);
     _prevState = _currState;
 }

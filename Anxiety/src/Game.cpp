@@ -4,6 +4,7 @@
 
 #include "Graphics/D3D11/VertexTypes.h"
 #include "Graphics/Geometry.h"
+#include "Math/Math.h"
 
 using namespace DirectX;
 using namespace Anx;
@@ -63,16 +64,16 @@ void Game::Cleanup()
 
 void Game::Update()
 {
-    static double elapsed = 0;
+    static double elapsedSeconds = 0;
     static std::string originalTitle = std::string{ SDL_GetWindowTitle(_window) };
 
-    elapsed += (float)_timer.GetElapsedSeconds();
+    elapsedSeconds += (float)_timer.GetElapsedSeconds();
 
-    if (elapsed >= 1.0f)
+    if (elapsedSeconds >= 1.0f)
     {
         std::string title = std::format("{} FPS: {}", originalTitle, _timer.GetFramesPerSecond());
         SDL_SetWindowTitle(_window, title.c_str());
-        elapsed -= 1.0f;
+        elapsedSeconds -= 1.0f;
     }
 
     static bool isFpsMode = false;
@@ -93,43 +94,36 @@ void Game::Update()
     auto pos = _mouse.Pos();
     if (isFpsMode)
     {
-        auto dir = XMVectorSet(pos.X, pos.Y, 0.0f, 0.0f);
-        dir = XMVector2Normalize(dir);
-        dir = XMVectorScale(dir, elapsed * 0.002f);
-        XMFLOAT2 storeDir;
-        XMStoreFloat2(&storeDir, dir);
-        std::cout << storeDir.x << ", " << storeDir.y << "\n";
-        _camera.Rotate(storeDir.x, storeDir.y);
+        _camera.Rotate(pos.X, pos.Y);
     }
 
-    XMVECTOR translation = XMVectorZero();
+    XMVECTOR direction = DirectX::g_XMZero;
 
     if (_keyboard.IsKeyDown(SDL_SCANCODE_W))
     {
-        translation = XMVectorAdd(translation, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+        direction = XMVectorAdd(direction, Anx::g_XMForward);
     }
     if (_keyboard.IsKeyDown(SDL_SCANCODE_S))
     {
-        translation = XMVectorAdd(translation, XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f));
+        direction = XMVectorAdd(direction, Anx::g_XMBack);
     }
     if (_keyboard.IsKeyDown(SDL_SCANCODE_A))
     {
-        translation = XMVectorAdd(translation, XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f));
+        direction = XMVectorAdd(direction, Anx::g_XMLeft);
     }
     if (_keyboard.IsKeyDown(SDL_SCANCODE_D))
     {
-        translation = XMVectorAdd(translation, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f));
+        direction = XMVectorAdd(direction, Anx::g_XMRight);
     }
 
-    if (!DirectX::XMVector3Equal(translation, XMVectorZero()))
+    if (!DirectX::XMVector3Equal(direction, DirectX::g_XMZero))
     {
-        translation = XMVectorScale(translation, 1.0f * elapsed);
-        _camera.Move(translation);
+        _camera.Move(DirectX::XMVector3Normalize(direction));
     }
 
-    _camera.Update();
+    _camera.Update((float)_timer.GetElapsedSeconds());
 
-    XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.View() * _camera.Projection());
+    XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.GetView() * _camera.GetProjection());
 
     //XMVECTOR position = XMVectorSet(posX, posY, posZ, 1.0f);
     //XMVECTOR target = XMVectorZero();

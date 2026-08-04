@@ -45,6 +45,7 @@
     <ClInclude Include="src\Graphics\Geometry.h" />
     <ClInclude Include="src\Input\Mouse.h" />
     <ClInclude Include="src\Math\Bezier.h" />
+    <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
