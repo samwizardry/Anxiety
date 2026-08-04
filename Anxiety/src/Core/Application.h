@@ -4,6 +4,8 @@
 
 #include "StepTimer.h"
 #include "../Graphics/D3D11/GraphicsDevice.h"
+#include "../Input/Keyboard.h"
+#include "../Input/Mouse.h"
 
 namespace Anx {
 
@@ -49,6 +51,8 @@ protected:
     SDL_Window* _window{ nullptr };
     Anx::GraphicsDevice* _graphicsDevice{ nullptr };
     StepTimer _timer{};
+    Keyboard _keyboard{};
+    Mouse _mouse{};
 
 private:
 };

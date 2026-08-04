@@ -26,7 +26,6 @@ void Game::Startup()
 
     // Cube
 
-
     //ComputeBox(vertices, indices, XMFLOAT3{ 1.0f, 1.0f, 1.0f }, false, false);
 
     //_cubeIndexCount = static_cast<uint32_t>(indices.size());
@@ -67,64 +66,88 @@ void Game::Update()
     static double elapsed = 0;
     static std::string originalTitle = std::string{ SDL_GetWindowTitle(_window) };
 
-    elapsed += _timer.GetElapsedSeconds();
+    elapsed += (float)_timer.GetElapsedSeconds();
 
-    if (elapsed >= 1.0)
+    if (elapsed >= 1.0f)
     {
         std::string title = std::format("{} FPS: {}", originalTitle, _timer.GetFramesPerSecond());
         SDL_SetWindowTitle(_window, title.c_str());
-        elapsed -= 1.0;
+        elapsed -= 1.0f;
     }
 
-    static float posX{ 0.0f };
-    static float posY{ 0.0f };
-    static float posZ{ -5.0f };
+    static bool isFpsMode = false;
 
-    //auto keyboard = _keyboard->GetState();
-    //if (keyboard.A)
-    //{
-    //    posX -= static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
-    //if (keyboard.D)
-    //{
-    //    posX += static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
-    //if (keyboard.W)
-    //{
-    //    posY += static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
-    //if (keyboard.S)
-    //{
-    //    posY -= static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
-    //if (keyboard.Q)
-    //{
-    //    posZ -= static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
-    //if (keyboard.E)
-    //{
-    //    posZ += static_cast<float>(_timer.GetElapsedSeconds()) * 5.0f;
-    //}
+    if (_mouse.IsButtonPressed(MouseButton::Right))
+    {
+        std::cout << "FPS!\n";
+        _mouse.SetFpsMode(true);
+        isFpsMode = true;
+    }
+    if (_mouse.IsButtonReleased(MouseButton::Right))
+    {
+        std::cout << "Default mode!\n";
+        _mouse.SetFpsMode(false);
+        isFpsMode = false;
+    }
 
-    //XMMATRIX world = DirectX::XMMatrixIdentity();
+    auto pos = _mouse.Pos();
+    if (isFpsMode)
+    {
+        auto dir = XMVectorSet(pos.X, pos.Y, 0.0f, 0.0f);
+        dir = XMVector2Normalize(dir);
+        dir = XMVectorScale(dir, elapsed * 0.002f);
+        XMFLOAT2 storeDir;
+        XMStoreFloat2(&storeDir, dir);
+        std::cout << storeDir.x << ", " << storeDir.y << "\n";
+        _camera.Rotate(storeDir.x, storeDir.y);
+    }
 
-    XMVECTOR pos = XMVectorSet(posX, posY, posZ, 1.0f);
-    XMVECTOR target = XMVectorZero();
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
+    XMVECTOR translation = XMVectorZero();
 
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(60.0f), 960.0f / 720.0f, 0.1f, 1000.0f);
+    if (_keyboard.IsKeyDown(SDL_SCANCODE_W))
+    {
+        translation = XMVectorAdd(translation, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+    }
+    if (_keyboard.IsKeyDown(SDL_SCANCODE_S))
+    {
+        translation = XMVectorAdd(translation, XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f));
+    }
+    if (_keyboard.IsKeyDown(SDL_SCANCODE_A))
+    {
+        translation = XMVectorAdd(translation, XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f));
+    }
+    if (_keyboard.IsKeyDown(SDL_SCANCODE_D))
+    {
+        translation = XMVectorAdd(translation, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f));
+    }
 
-    static float dx{};
-    static float dy{};
+    if (!DirectX::XMVector3Equal(translation, XMVectorZero()))
+    {
+        translation = XMVectorScale(translation, 1.0f * elapsed);
+        _camera.Move(translation);
+    }
 
-    dx += 80.0f * (float)_timer.GetElapsedSeconds();
-    dy += 50.0f * (float)_timer.GetElapsedSeconds();
+    _camera.Update();
 
-    XMMATRIX world = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(dx)) * DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(dy));
+    XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.View() * _camera.Projection());
 
-    XMMATRIX worldViewProj = world * view * proj;
-    XMStoreFloat4x4(&_cubeWorldViewProj, worldViewProj);
+    //XMVECTOR position = XMVectorSet(posX, posY, posZ, 1.0f);
+    //XMVECTOR target = XMVectorZero();
+    //XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    //XMMATRIX view = XMMatrixLookAtLH(position, target, up);
+
+    //XMMATRIX proj = XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(60.0f), 960.0f / 720.0f, 0.1f, 1000.0f);
+
+    //static float dx{};
+    //static float dy{};
+
+    //dx += 80.0f * (float)_timer.GetElapsedSeconds();
+    //dy += 50.0f * (float)_timer.GetElapsedSeconds();
+
+    //XMMATRIX world = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(dx)) * DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(dy));
+
+    //XMMATRIX worldViewProj = world * view * proj;
+    //XMStoreFloat4x4(&_cubeWorldViewProj, worldViewProj);
 }
 
 void Game::Render()

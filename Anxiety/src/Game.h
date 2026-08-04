@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 
 #include "Core/Application.h"
+#include "Core/Camera.h"
 #include "Graphics/D3D11/Shader.h"
 #include "Graphics/D3D11/Buffer.h"
 
@@ -19,6 +20,8 @@ protected:
     void Render() override;
 
 private:
+    Anx::FreeCamera _camera{ DirectX::XM_PIDIV4, 960.0f / 720.0f };
+
     Anx::Shader* _posColShader{ nullptr };
     Anx::Shader* _posNormTexShader{ nullptr };
 

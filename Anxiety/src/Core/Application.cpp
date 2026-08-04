@@ -39,6 +39,8 @@ SDL_AppResult Application::Init()
 
     SDL_ShowWindow(_window);
 
+    _mouse.SetWindow(_window);
+
     Startup();
 
     return SDL_APP_CONTINUE;
@@ -63,7 +65,7 @@ SDL_AppResult Application::HandleEvent(SDL_Event* event)
 
     if (event->type == SDL_EVENT_KEY_DOWN)
     {
-        if (event->key.key == SDLK_ESCAPE)
+        if (event->key.scancode == SDL_SCANCODE_ESCAPE)
         {
             return SDL_APP_SUCCESS;
         }
@@ -79,6 +81,9 @@ SDL_AppResult Application::HandleEvent(SDL_Event* event)
 
 SDL_AppResult Application::Frame()
 {
+    _keyboard.Update();
+    _mouse.Update();
+
     _timer.Tick([this]()
         {
             Update();
