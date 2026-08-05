@@ -39,7 +39,6 @@
     <ClInclude Include="src\Graphics\D3D11\Buffer.h" />
     <ClInclude Include="src\Graphics\D3D11\GraphicsDevice.h" />
     <ClInclude Include="src\Graphics\D3D11\Utils.h" />
-    <ClInclude Include="src\Graphics\D3D11\RHI.h" />
     <ClInclude Include="src\Graphics\D3D11\Shader.h" />
     <ClInclude Include="src\Graphics\D3D11\VertexTypes.h" />
     <ClInclude Include="src\Graphics\Geometry.h" />
@@ -61,6 +60,14 @@
       <FileType>Document</FileType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.0</ShaderModel>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\Light.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="res\Shaders\LightSource.hlsl">
+      <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">

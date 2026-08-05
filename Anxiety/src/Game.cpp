@@ -21,39 +21,37 @@ void Game::Startup()
 {
     _posColShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
     _posNormTexShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionNormalTexture.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
+    _lightShader = new Shader{ _graphicsDevice, L"res/Shaders/Light.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
+    _lightSourceShader = new Shader{ _graphicsDevice, L"res/Shaders/LightSource.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
 
     std::vector<VertexPositionNormalTexture> vertices{};
     std::vector<uint16_t> indices{};
 
+    _cbPerObject = new ConstantBuffer(_graphicsDevice, true, (sizeof(CBPerObjectData) + 255) & ~255, nullptr);
+    _cbPerFrame = new ConstantBuffer(_graphicsDevice, true, (sizeof(CBPerFrameData) + 255) & ~255, nullptr);
+
     // Cube
 
-    //ComputeBox(vertices, indices, XMFLOAT3{ 1.0f, 1.0f, 1.0f }, false, false);
-
-    //_cubeIndexCount = static_cast<uint32_t>(indices.size());
-
-    //_cubeVB = new Buffer{ _graphicsDevice, ResourceBindFlags::VertexBuffer, ResourceUsage::Default, CpuAccessFlag::None, vertices.data(),
-    //    static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()) };
-
-    //_cubeIB = new Buffer{ _graphicsDevice, ResourceBindFlags::IndexBuffer, ResourceUsage::Default, CpuAccessFlag::None, indices.data(),
-    //    static_cast<uint32_t>(sizeof(uint16_t) * indices.size()) };
+    // Light source
+    ComputeSphere(vertices, indices, 2.0f, 8, false, false);
+    _lightIndexCount = static_cast<uint32_t>(indices.size());
+    _lightVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
+    _lightIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
 
     // Teapot
-
     ComputeTeapot(vertices, indices, 2.0f, 5, false);
-
     _tpIndexCount = static_cast<uint32_t>(indices.size());
-
-    _tpVB = new Buffer{ _graphicsDevice, ResourceBindFlags::VertexBuffer, ResourceUsage::Default, CpuAccessFlag::None, vertices.data(),
-        static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()) };
-
-    _tpIB = new Buffer{ _graphicsDevice, ResourceBindFlags::IndexBuffer, ResourceUsage::Default, CpuAccessFlag::None, indices.data(),
-        static_cast<uint32_t>(sizeof(uint16_t) * indices.size()) };
+    _tpVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
+    _tpIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
 }
 
 void Game::Cleanup()
 {
     delete _posColShader;
     delete _posNormTexShader;
+
+    delete _cbPerObject;
+    delete _cbPerFrame;
 
     delete _cubeVB;
     delete _cubeIB;
@@ -123,7 +121,7 @@ void Game::Update()
 
     _camera.Update((float)_timer.GetElapsedSeconds());
 
-    XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.GetView() * _camera.GetProjection());
+    //XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.GetView() * _camera.GetProjection());
 
     //XMVECTOR position = XMVectorSet(posX, posY, posZ, 1.0f);
     //XMVECTOR target = XMVectorZero();
@@ -146,39 +144,72 @@ void Game::Update()
 
 void Game::Render()
 {
-    static const float clearColor[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
+    static constexpr float clearColor[4] = { 0.15f, 0.15f, 0.15f, 1.0f };
     _graphicsDevice->Clear(clearColor);
 
     auto context = _graphicsDevice->GetContext();
 
-    //_posColShader->SetWorldViewProjection(XMLoadFloat4x4(&_cubeWorldViewProj));
-    //_posColShader->Use();
+    CBPerFrameData cbPerFrameData{};
+    CBPerObjectData cbPerObjecData{};
 
-    _posNormTexShader->SetWorldViewProjection(XMLoadFloat4x4(&_cubeWorldViewProj));
-    _posNormTexShader->Use();
+    // Bind per frame cb
+    XMMATRIX viewPorj = _camera.GetView() * _camera.GetProjection();
+    XMStoreFloat4x4(&cbPerFrameData.WorldViewProjection, XMMatrixTranspose(viewPorj));
 
-    // Cube
+    XMVECTOR lightCol = XMVectorSet(255.0f / 255.0f, 235.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+    XMStoreFloat4(&cbPerFrameData.LightColor, lightCol);
 
-    //uint32_t stride = sizeof(VertexPositionNormalTexture);
-    //uint32_t offset = 0;
+    XMVECTOR lightPos = XMVectorSet(3.0f, 4.0f, 5.0f, 0.0f);
+    XMStoreFloat3(&cbPerFrameData.LightPosition, lightPos);
 
-    //auto cubeVB = _cubeVB->GetNativeBuffer();
+    _cbPerFrame->SetData(&cbPerFrameData);
+    _cbPerFrame->BindVS(1);
+    _cbPerFrame->BindPS(1);
 
-    //context->IASetVertexBuffers(0, 1, &cubeVB, &stride, &offset);
-    //context->IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(_cubeIB->GetNativeBuffer()), ToDXGIFormat(Format::R16_UINT), 0);
+    // Bind light source shader
+    _lightSourceShader->Bind();
 
-    //context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    //context->DrawIndexed(_cubeIndexCount, 0, 0);
+    // Draw light sources
 
-    // Teapot
+    // Light source
+    // Bind per object cb
+    XMStoreFloat4x4(&cbPerObjecData.Transform, XMMatrixTranspose(XMMatrixTranslationFromVector(lightPos)));
+    _cbPerObject->SetData(&cbPerObjecData);
+    _cbPerObject->BindVS(0);
+    _cbPerObject->BindPS(0);
 
     uint32_t stride = sizeof(VertexPositionNormalTexture);
     uint32_t offset = 0;
 
-    auto tpVB = _tpVB->GetNativeBuffer();
+    auto lsVB = _lightVB->GetBuffer();
+    context->IASetVertexBuffers(0, 1, &lsVB, &stride, &offset);
 
+    _lightIB->Bind(DXGI_FORMAT_R16_UINT, 0);
+
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    context->DrawIndexed(_lightIndexCount, 0, 0);
+
+    // Bind light shader
+    _lightShader->Bind();
+
+    // Draw objects
+
+    // Teapot
+
+    // Bind per object cb
+    cbPerObjecData.ObjectColor = XMFLOAT4{ 1.0f, 0.5f, 0.31f, 1.0f };
+    XMStoreFloat4x4(&cbPerObjecData.Transform, XMMatrixTranspose(XMMatrixIdentity()));
+    _cbPerObject->SetData(&cbPerObjecData);
+    _cbPerObject->BindVS(0);
+    _cbPerObject->BindPS(0);
+
+    stride = sizeof(VertexPositionNormalTexture);
+    offset = 0;
+
+    auto tpVB = _tpVB->GetBuffer();
     context->IASetVertexBuffers(0, 1, &tpVB, &stride, &offset);
-    context->IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(_tpIB->GetNativeBuffer()), ToDXGIFormat(Format::R16_UINT), 0);
+
+    _tpIB->Bind(DXGI_FORMAT_R16_UINT, 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->DrawIndexed(_tpIndexCount, 0, 0);

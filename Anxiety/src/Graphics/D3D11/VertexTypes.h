@@ -11,42 +11,15 @@
 
 #include <DirectXMath.h>
 
-#include "RHI.h"
-
 namespace Anx {
 
-struct VertexElement
-{
-    static constexpr const char* Position{ "POSITION" };
-    static constexpr const char* Color{ "COLOR" };
-    static constexpr const char* Texture{ "TEXCOORD" };
-    static constexpr const char* Normal{ "NORMAL" };
-    static constexpr const char* Tangent{ "TANGENT" };
-    static constexpr const char* BlendIndices{ "BLENDINDICES" };
-    static constexpr const char* BlendWeights{ "BLENDWEIGHT" };
-
-    const char* SemanticName;
-    uint32_t SemanticIndex;
-    Format Format;
-    uint32_t InputSlot;
-    uint32_t AlignedByteOffset;
-    InputClassification InputSlotClass;
-    uint32_t InstanceDataStepRate;
-
-    D3D11_INPUT_ELEMENT_DESC ToD3D11InputElementDesc() const
-    {
-        D3D11_INPUT_ELEMENT_DESC desc;
-        desc.SemanticName = SemanticName;
-        desc.SemanticIndex = SemanticIndex;
-        desc.Format = ToDXGIFormat(Format);
-        desc.InputSlot = InputSlot;
-        desc.AlignedByteOffset = AlignedByteOffset;
-        desc.InputSlotClass = ToD3D11InputClassification(InputSlotClass);
-        desc.InstanceDataStepRate = InstanceDataStepRate;
-        return desc;
-    }
-};
-
+inline constexpr const char* g_VertexNamePosition{ "POSITION" };
+inline constexpr const char* g_VertexNameColor{ "COLOR" };
+inline constexpr const char* g_VertexNameTexture{ "TEXCOORD" };
+inline constexpr const char* g_VertexNameNormal{ "NORMAL" };
+inline constexpr const char* g_VertexNameTangent{ "TANGENT" };
+inline constexpr const char* g_VertexNameBlendIndices{ "BLENDINDICES" };
+inline constexpr const char* g_VertexNameBlendWeights{ "BLENDWEIGHT" };
 
 // Vertex struct holding position information.
 struct VertexPosition
@@ -72,7 +45,7 @@ struct VertexPosition
     DirectX::XMFLOAT3 Position;
 
     static constexpr uint32_t InputElementCount = 1;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -103,7 +76,7 @@ struct VertexPositionColor
     DirectX::XMFLOAT4 Color;
 
     static constexpr uint32_t InputElementCount = 2;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -134,7 +107,7 @@ struct VertexPositionTexture
     DirectX::XMFLOAT2 TextureCoordinate;
 
     static constexpr uint32_t InputElementCount = 2;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -174,7 +147,7 @@ struct VertexPositionDualTexture
     DirectX::XMFLOAT2 TextureCoordinate1;
 
     static constexpr uint32_t InputElementCount = 3;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -205,7 +178,7 @@ struct VertexPositionNormal
     DirectX::XMFLOAT3 Normal;
 
     static constexpr uint32_t InputElementCount = 2;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -239,7 +212,7 @@ struct VertexPositionColorTexture
     DirectX::XMFLOAT2 TextureCoordinate;
 
     static constexpr uint32_t InputElementCount = 3;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -273,7 +246,7 @@ struct VertexPositionNormalColor
     DirectX::XMFLOAT4 Color;
 
     static constexpr uint32_t InputElementCount = 3;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -307,7 +280,7 @@ struct VertexPositionNormalTexture
     DirectX::XMFLOAT2 TextureCoordinate;
 
     static constexpr uint32_t InputElementCount = 3;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -348,7 +321,7 @@ struct VertexPositionNormalColorTexture
     DirectX::XMFLOAT2 TextureCoordinate;
 
     static constexpr uint32_t InputElementCount = 4;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -433,7 +406,7 @@ struct VertexPositionNormalTangentColorTexture
     void SetColor(DirectX::FXMVECTOR icolor) noexcept;
 
     static constexpr uint32_t InputElementCount = 5;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 
@@ -522,7 +495,7 @@ struct VertexPositionNormalTangentColorTextureSkinning : public VertexPositionNo
     void SetBlendWeights(DirectX::FXMVECTOR iweights) noexcept;
 
     static constexpr uint32_t InputElementCount = 7;
-    static const VertexElement InputElements[InputElementCount];
+    static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
 }

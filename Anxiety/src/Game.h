@@ -20,18 +20,43 @@ protected:
     void Render() override;
 
 private:
+    struct CBPerObjectData
+    {
+        DirectX::XMFLOAT4X4 Transform{};
+        DirectX::XMFLOAT4 ObjectColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+    };
+
+    struct CBPerFrameData
+    {
+        DirectX::XMFLOAT4X4 WorldViewProjection{};
+        DirectX::XMFLOAT4 LightColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+        DirectX::XMFLOAT3 LightPosition{};
+        float pad0{};
+    };
+
     Anx::FreeCamera _camera{ DirectX::XM_PIDIV4, 960.0f / 720.0f };
 
-    Anx::Shader* _posColShader{ nullptr };
-    Anx::Shader* _posNormTexShader{ nullptr };
+    Anx::Shader* _posColShader{};
+    Anx::Shader* _posNormTexShader{};
+    Anx::Shader* _lightShader{};
+    Anx::Shader* _lightSourceShader{};
 
-    uint32_t _cubeIndexCount{ 0 };
-    Anx::Buffer* _cubeVB{ nullptr };
-    Anx::Buffer* _cubeIB{ nullptr };
-    DirectX::XMFLOAT4X4 _cubeWorldViewProj{};
+    Anx::ConstantBuffer* _cbPerObject{};
+    Anx::ConstantBuffer* _cbPerFrame{};
 
-    uint32_t _tpIndexCount{ 0 };
-    Anx::Buffer* _tpVB{ nullptr };
-    Anx::Buffer* _tpIB{ nullptr };
-    DirectX::XMFLOAT4X4 _tpWorldViewProj{};
+    uint32_t _cubeIndexCount{};
+    Anx::VertexBuffer* _cubeVB{};
+    Anx::IndexBuffer* _cubeIB{};
+    DirectX::XMFLOAT4X4 _cubeTransform{};
+
+    // light source
+    uint32_t _lightIndexCount{};
+    Anx::VertexBuffer* _lightVB{};
+    Anx::IndexBuffer* _lightIB{};
+    DirectX::XMFLOAT4X4 _lightTransform{};
+
+    uint32_t _tpIndexCount{};
+    Anx::VertexBuffer* _tpVB{};
+    Anx::IndexBuffer* _tpIB{};
+    DirectX::XMFLOAT4X4 _tpTransform{};
 };

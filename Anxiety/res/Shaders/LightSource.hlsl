@@ -1,11 +1,16 @@
 cbuffer cbPerObject : register(b0)
 {
+    // Transformation matrix
     float4x4 gModel;
+    // Object color
+    float4 gColor;
 };
 
 cbuffer cbPerFrame : register(b1)
 {
     float4x4 gViewProjection;
+    float4 gLightColor;
+    float3 gLightPosition;
 };
 
 struct VertexIn
@@ -32,5 +37,5 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return gLightColor;
 }

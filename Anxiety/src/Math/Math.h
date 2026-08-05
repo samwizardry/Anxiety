@@ -4,7 +4,7 @@
 
 namespace Anx {
 
-inline constexpr float SourceEngineMouseRotationCoefficient = 0.022f;
+inline constexpr float g_SourceEngineMouseRotationCoefficient = 0.022f;
 
 inline constexpr DirectX::XMVECTORF32 g_XMUp = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
 inline constexpr DirectX::XMVECTORF32 g_XMDown = { { { 0.0f, -1.0f, 0.0f, 0.0f } } };

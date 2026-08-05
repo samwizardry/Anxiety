@@ -18,9 +18,9 @@ namespace Anx {
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position .
-const VertexElement VertexPosition::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPosition::InputElements[] =
 {
-    { VertexElement::Position, 0, Format::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition, 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPosition) == 12, "Vertex struct/layout mismatch");
@@ -28,10 +28,10 @@ static_assert(sizeof(VertexPosition) == 12, "Vertex struct/layout mismatch");
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position and color information.
-const VertexElement VertexPositionColor::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionColor::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,     0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,     0, Format::R32G32B32A32_FLOAT,  0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,     0, DXGI_FORMAT_R32G32B32A32_FLOAT,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionColor) == 28, "Vertex struct/layout mismatch");
@@ -39,10 +39,10 @@ static_assert(sizeof(VertexPositionColor) == 28, "Vertex struct/layout mismatch"
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position and texture mapping information.
-const VertexElement VertexPositionTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionTexture) == 20, "Vertex struct/layout mismatch");
@@ -50,11 +50,11 @@ static_assert(sizeof(VertexPositionTexture) == 20, "Vertex struct/layout mismatc
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position and dual texture mapping information.
-const VertexElement VertexPositionDualTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionDualTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   1, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   1, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionDualTexture) == 28, "Vertex struct/layout mismatch");
@@ -62,10 +62,10 @@ static_assert(sizeof(VertexPositionDualTexture) == 28, "Vertex struct/layout mis
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position and normal vector.
-const VertexElement VertexPositionNormal::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormal::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,    0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionNormal) == 24, "Vertex struct/layout mismatch");
@@ -73,11 +73,11 @@ static_assert(sizeof(VertexPositionNormal) == 24, "Vertex struct/layout mismatch
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position, color, and texture mapping information.
-const VertexElement VertexPositionColorTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionColorTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,     0, Format::R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionColorTexture) == 36, "Vertex struct/layout mismatch");
@@ -85,11 +85,11 @@ static_assert(sizeof(VertexPositionColorTexture) == 36, "Vertex struct/layout mi
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position, normal vector, and color information.
-const VertexElement VertexPositionNormalColor::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalColor::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,    0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,     0, Format::R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionNormalColor) == 40, "Vertex struct/layout mismatch");
@@ -97,11 +97,11 @@ static_assert(sizeof(VertexPositionNormalColor) == 40, "Vertex struct/layout mis
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position, normal vector, and texture mapping information.
-const VertexElement VertexPositionNormalTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,    0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionNormalTexture) == 32, "Vertex struct/layout mismatch");
@@ -109,12 +109,12 @@ static_assert(sizeof(VertexPositionNormalTexture) == 32, "Vertex struct/layout m
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position, normal vector, color, and texture mapping information.
-const VertexElement VertexPositionNormalColorTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalColorTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,    0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,     0, Format::R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionNormalColorTexture) == 48, "Vertex struct/layout mismatch");
@@ -123,13 +123,13 @@ static_assert(sizeof(VertexPositionNormalColorTexture) == 48, "Vertex struct/lay
 //--------------------------------------------------------------------------------------
 // Vertex struct for Visual Studio Shader Designer (DGSL) holding position, normal,
 // tangent, color (RGBA), and texture mapping information
-const VertexElement VertexPositionNormalTangentColorTexture::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTangentColorTexture::InputElements[] =
 {
-    { VertexElement::Position,  0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,    0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Tangent,   0, Format::R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,     0, Format::R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,   0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,  0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTangent,   0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,     0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(sizeof(VertexPositionNormalTangentColorTexture) == 52, "Vertex struct/layout mismatch");
@@ -145,15 +145,15 @@ void VertexPositionNormalTangentColorTexture::SetColor(FXMVECTOR icolor) noexcep
 //--------------------------------------------------------------------------------------
 // Vertex struct for Visual Studio Shader Designer (DGSL) holding position, normal,
 // tangent, color (RGBA), texture mapping information, and skinning weights
-const VertexElement VertexPositionNormalTangentColorTextureSkinning::InputElements[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTangentColorTextureSkinning::InputElements[] =
 {
-    { VertexElement::Position,      0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Normal,        0, Format::R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Tangent,       0, Format::R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Color,         0, Format::R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::Texture,       0, Format::R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::BlendIndices,  0, Format::R8G8B8A8_UINT,      0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 },
-    { VertexElement::BlendWeights,  0, Format::R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, InputClassification::PerVertexData, 0 }
+    { Anx::g_VertexNamePosition,      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameNormal,        0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTangent,       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameColor,         0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameTexture,       0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameBlendIndices,  0, DXGI_FORMAT_R8G8B8A8_UINT,      0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { Anx::g_VertexNameBlendWeights,  0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 };
 
 static_assert(VertexPositionNormalTangentColorTextureSkinning::InputElementCount == VertexPositionNormalTangentColorTexture::InputElementCount + 2, "layout mismatch");

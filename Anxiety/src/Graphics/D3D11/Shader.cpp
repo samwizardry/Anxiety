@@ -6,7 +6,7 @@
 
 namespace Anx {
 
-Shader::Shader(GraphicsDevice* graphicsDevice, const std::wstring& path, const VertexElement* elements, uint32_t numElements)
+Shader::Shader(GraphicsDevice* graphicsDevice, const std::wstring& path, const D3D11_INPUT_ELEMENT_DESC* elements, uint32_t numElements)
     : _graphicsDevice{ graphicsDevice }
 {
     DWORD shaderFlags = 0;
@@ -28,38 +28,12 @@ Shader::Shader(GraphicsDevice* graphicsDevice, const std::wstring& path, const V
         psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), nullptr, _pixelShader.GetAddressOf())
     );
 
-    std::vector<D3D11_INPUT_ELEMENT_DESC> vertexLayoutDesc{};
-    vertexLayoutDesc.reserve(numElements);
-
-    for (uint32_t i = 0; i < numElements; ++i)
-    {
-        vertexLayoutDesc.push_back(elements[i].ToD3D11InputElementDesc());
-    }
-
     ThrowIfFailed(_graphicsDevice->GetDevice()->CreateInputLayout(
-        vertexLayoutDesc.data(), numElements,
+        elements, numElements,
         vsBuffer->GetBufferPointer(),
         vsBuffer->GetBufferSize(),
         _vertexLayout.GetAddressOf())
     );
-
-    D3D11_BUFFER_DESC matrixBufferDesc;
-    matrixBufferDesc.ByteWidth = sizeof(DirectX::XMMATRIX);
-    matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    matrixBufferDesc.MiscFlags = 0;
-    matrixBufferDesc.StructureByteStride = 0;
-
-    ThrowIfFailed(_graphicsDevice->GetDevice()->CreateBuffer(
-        &matrixBufferDesc,
-        nullptr,
-        _worldViewProjection.GetAddressOf())
-    );
-}
-
-Shader::~Shader()
-{
 }
 
 void Shader::Compile(LPCWSTR pFileName, LPCSTR pEntryPoint, LPCSTR pTarget, UINT flags1, UINT flags2, ID3D10Blob** ppCode)
@@ -80,24 +54,7 @@ void Shader::Compile(LPCWSTR pFileName, LPCSTR pEntryPoint, LPCSTR pTarget, UINT
     }
 }
 
-void Shader::SetWorldViewProjection(DirectX::FXMMATRIX worldViewProj)
-{
-    auto context = _graphicsDevice->GetContext();
-    auto worldViewProjection = _worldViewProjection.Get();
-
-    D3D11_MAPPED_SUBRESOURCE mappedSubres;
-    ThrowIfFailed(context->Map(
-        worldViewProjection, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubres)
-    );
-
-    DirectX::XMMATRIX* pWorldViewProj = static_cast<DirectX::XMMATRIX*>(mappedSubres.pData);
-    *pWorldViewProj = DirectX::XMMatrixTranspose(worldViewProj);
-
-    context->Unmap(worldViewProjection, 0);
-    context->VSSetConstantBuffers(0, 1, &worldViewProjection);
-}
-
-void Shader::Use()
+void Shader::Bind()
 {
     auto context = _graphicsDevice->GetContext();
     context->IASetInputLayout(_vertexLayout.Get());
