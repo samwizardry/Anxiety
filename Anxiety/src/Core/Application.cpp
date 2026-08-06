@@ -32,10 +32,19 @@ SDL_AppResult Application::Init()
         return SDL_APP_FAILURE;
     }
 
-    _graphicsDevice = new GraphicsDevice{
-        SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
-        width, height, true
-    };
+    try
+    {
+        _graphicsDevice = new GraphicsDevice
+        {
+            SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
+            width, height, true
+        };
+    }
+    catch (const std::exception ex)
+    {
+        SDL_Log("Couldn't initialize D3D11: %s", ex.what());
+        return SDL_APP_FAILURE;
+    }
 
     SDL_ShowWindow(_window);
 
@@ -50,8 +59,11 @@ SDL_AppResult Application::Shutdown()
 {
     Cleanup();
 
-    delete _graphicsDevice;
-    _graphicsDevice = nullptr;
+    if (_graphicsDevice != nullptr)
+    {
+        delete _graphicsDevice;
+        _graphicsDevice = nullptr;
+    }
 
     return SDL_APP_SUCCESS;
 }

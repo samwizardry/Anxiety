@@ -72,7 +72,7 @@ inline void InvertNormals(std::vector<VertexPositionNormalTexture>& vertices)
 //--------------------------------------------------------------------------------------
 // Cube (aka a Hexahedron) or Box
 //--------------------------------------------------------------------------------------
-void ComputeBox(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, const XMFLOAT3& size, bool rhcoords, bool invertn)
+void Geometry::ComputeBox(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, const XMFLOAT3& size, bool rhcoords, bool invertn)
 {
     vertices.clear();
     vertices.reserve(24);
@@ -150,7 +150,7 @@ void ComputeBox(std::vector<VertexPositionNormalTexture>& vertices, std::vector<
 //--------------------------------------------------------------------------------------
 // Sphere
 //--------------------------------------------------------------------------------------
-void ComputeSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn)
+void Geometry::ComputeSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn)
 {
     vertices.clear();
     indices.clear();
@@ -225,7 +225,7 @@ void ComputeSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vect
 //--------------------------------------------------------------------------------------
 // Geodesic sphere
 //--------------------------------------------------------------------------------------
-void ComputeGeoSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords)
+void Geometry::ComputeGeoSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -615,7 +615,7 @@ void CreateCylinderCap(std::vector<VertexPositionNormalTexture>& vertices, std::
 }
 }
 
-void ComputeCylinder(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float height, float diameter, size_t tessellation, bool rhcoords)
+void Geometry::ComputeCylinder(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float height, float diameter, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -664,7 +664,7 @@ void ComputeCylinder(std::vector<VertexPositionNormalTexture>& vertices, std::ve
 
 
 // Creates a cone primitive.
-void ComputeCone(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float height, size_t tessellation, bool rhcoords)
+void Geometry::ComputeCone(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float height, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -718,7 +718,7 @@ void ComputeCone(std::vector<VertexPositionNormalTexture>& vertices, std::vector
 //--------------------------------------------------------------------------------------
 // Torus
 //--------------------------------------------------------------------------------------
-void ComputeTorus(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float thickness, size_t tessellation, bool rhcoords)
+void Geometry::ComputeTorus(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float thickness, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -782,17 +782,17 @@ void ComputeTorus(std::vector<VertexPositionNormalTexture>& vertices, std::vecto
 //--------------------------------------------------------------------------------------
 // Tetrahedron
 //--------------------------------------------------------------------------------------
-void ComputeTetrahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+void Geometry::ComputeTetrahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
 
     static const XMVECTORF32 verts[4] =
     {
-        { { {              0.f,          0.f,        1.f, 0 } } },
-        { { {  2.f * SQRT2 / 3.f,          0.f, -1.f / 3.f, 0 } } },
-        { { {     -SQRT2 / 3.f,  SQRT6 / 3.f, -1.f / 3.f, 0 } } },
-        { { {     -SQRT2 / 3.f, -SQRT6 / 3.f, -1.f / 3.f, 0 } } }
+        { { {               0.f,          0.f,        1.f, 0 } } },
+        { { { 2.f * SQRT2 / 3.f,          0.f, -1.f / 3.f, 0 } } },
+        { { {      -SQRT2 / 3.f,  SQRT6 / 3.f, -1.f / 3.f, 0 } } },
+        { { {      -SQRT2 / 3.f, -SQRT6 / 3.f, -1.f / 3.f, 0 } } }
     };
 
     static const uint32_t faces[4 * 3] =
@@ -842,7 +842,7 @@ void ComputeTetrahedron(std::vector<VertexPositionNormalTexture>& vertices, std:
 //--------------------------------------------------------------------------------------
 // Octahedron
 //--------------------------------------------------------------------------------------
-void ComputeOctahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+void Geometry::ComputeOctahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -908,7 +908,7 @@ void ComputeOctahedron(std::vector<VertexPositionNormalTexture>& vertices, std::
 //--------------------------------------------------------------------------------------
 // Dodecahedron
 //--------------------------------------------------------------------------------------
-void ComputeDodecahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+void Geometry::ComputeDodecahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -1039,7 +1039,7 @@ void ComputeDodecahedron(std::vector<VertexPositionNormalTexture>& vertices, std
 //--------------------------------------------------------------------------------------
 // Icosahedron
 //--------------------------------------------------------------------------------------
-void ComputeIcosahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+void Geometry::ComputeIcosahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -1161,7 +1161,7 @@ void TessellatePatch(std::vector<VertexPositionNormalTexture>& vertices, std::ve
 
 
 // Creates a teapot primitive.
-void ComputeTeapot(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, size_t tessellation, bool rhcoords)
+void Geometry::ComputeTeapot(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();

@@ -33,13 +33,13 @@ void Game::Startup()
     // Cube
 
     // Light source
-    ComputeSphere(vertices, indices, 2.0f, 8, false, false);
+    Geometry::ComputeGeoSphere(vertices, indices, 1.0f, 5, false);
     _lightIndexCount = static_cast<uint32_t>(indices.size());
     _lightVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
     _lightIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
 
     // Teapot
-    ComputeTeapot(vertices, indices, 2.0f, 5, false);
+    Geometry::ComputeTeapot(vertices, indices, 2.0f, 8, false);
     _tpIndexCount = static_cast<uint32_t>(indices.size());
     _tpVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
     _tpIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
@@ -161,6 +161,9 @@ void Game::Render()
 
     XMVECTOR lightPos = XMVectorSet(3.0f, 4.0f, 5.0f, 0.0f);
     XMStoreFloat3(&cbPerFrameData.LightPosition, lightPos);
+
+    XMVECTOR viewPosition = _camera.GetPosition();
+    XMStoreFloat3(&cbPerFrameData.ViewPosition, viewPosition);
 
     _cbPerFrame->SetData(&cbPerFrameData);
     _cbPerFrame->BindVS(1);

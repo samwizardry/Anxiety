@@ -11,6 +11,7 @@ cbuffer cbPerFrame : register(b1)
     float4x4 gViewProjection;
     float4 gLightColor;
     float3 gLightPosition;
+    float3 gViewPosition;
 };
 
 struct VertexIn
