@@ -11,8 +11,6 @@ public:
 
     virtual ~Camera() = default;
 
-    virtual void Update(float deltaTime) = 0;
-
     inline DirectX::XMMATRIX GetView() const
     {
         return DirectX::XMLoadFloat4x4(&_view);
@@ -27,6 +25,8 @@ public:
     {
         return DirectX::XMLoadFloat3(&_position);
     }
+
+    virtual void Update(float deltaTime) = 0;
 
 protected:
     DirectX::XMFLOAT4X4 _view{};

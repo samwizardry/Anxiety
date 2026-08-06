@@ -22,17 +22,18 @@ protected:
 private:
     struct CBPerObjectData
     {
-        DirectX::XMFLOAT4X4 Transform{};
+        DirectX::XMFLOAT4X4 Model{};
+        DirectX::XMFLOAT4X4 NormalMatrix{};
         DirectX::XMFLOAT4 ObjectColor{};
     };
 
     struct CBPerFrameData
     {
-        DirectX::XMFLOAT4X4 WorldViewProjection{};
+        DirectX::XMFLOAT4X4 View{};
+        DirectX::XMFLOAT4X4 Projection{};
         DirectX::XMFLOAT4 LightColor{};
-        DirectX::XMFLOAT3 LightPosition{};
-        float pad0{};
-        DirectX::XMFLOAT3 ViewPosition{};
+        DirectX::XMFLOAT3 LightViewPosition{};
+        float Pad0{};
     };
 
     Anx::FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f};
@@ -48,16 +49,17 @@ private:
     uint32_t _cubeIndexCount{};
     Anx::VertexBuffer* _cubeVB{};
     Anx::IndexBuffer* _cubeIB{};
-    DirectX::XMFLOAT4X4 _cubeTransform{};
+    DirectX::XMFLOAT4X4 _cubeModel{};
 
     // light source
     uint32_t _lightIndexCount{};
     Anx::VertexBuffer* _lightVB{};
     Anx::IndexBuffer* _lightIB{};
-    DirectX::XMFLOAT4X4 _lightTransform{};
+    DirectX::XMFLOAT3 _lightPos{ 5.0f, 0.0f, 5.0f };
+    DirectX::XMFLOAT4X4 _lightModel{};
 
     uint32_t _tpIndexCount{};
     Anx::VertexBuffer* _tpVB{};
     Anx::IndexBuffer* _tpIB{};
-    DirectX::XMFLOAT4X4 _tpTransform{};
+    DirectX::XMFLOAT4X4 _tpModel{};
 };

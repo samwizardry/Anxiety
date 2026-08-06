@@ -62,36 +62,40 @@ void Game::Cleanup()
 
 void Game::Update()
 {
+    double deltaTime = _timer.GetElapsedSeconds();
+
+    // Fps counter
+
     static double elapsedSeconds = 0;
     static std::string originalTitle = std::string{ SDL_GetWindowTitle(_window) };
 
-    elapsedSeconds += (float)_timer.GetElapsedSeconds();
+    elapsedSeconds += deltaTime;
 
-    if (elapsedSeconds >= 1.0f)
+    if (elapsedSeconds >= 1.0)
     {
         std::string title = std::format("{} FPS: {}", originalTitle, _timer.GetFramesPerSecond());
         SDL_SetWindowTitle(_window, title.c_str());
-        elapsedSeconds -= 1.0f;
+        elapsedSeconds -= 1.0;
     }
+
+    // Update camera
 
     static bool isFpsMode = false;
 
     if (_mouse.IsButtonPressed(MouseButton::Right))
     {
-        std::cout << "FPS!\n";
         _mouse.SetFpsMode(true);
         isFpsMode = true;
     }
     if (_mouse.IsButtonReleased(MouseButton::Right))
     {
-        std::cout << "Default mode!\n";
         _mouse.SetFpsMode(false);
         isFpsMode = false;
     }
 
-    auto pos = _mouse.Pos();
     if (isFpsMode)
     {
+        auto pos = _mouse.Pos();
         _camera.Rotate(pos.X, pos.Y);
     }
 
@@ -119,27 +123,27 @@ void Game::Update()
         _camera.Move(DirectX::XMVector3Normalize(direction));
     }
 
-    _camera.Update((float)_timer.GetElapsedSeconds());
+    _camera.Update(deltaTime);
 
-    //XMStoreFloat4x4(&_cubeWorldViewProj, XMMatrixIdentity() * _camera.GetView() * _camera.GetProjection());
+    // Move light
+    auto lightPos = DirectX::XMLoadFloat3(&_lightPos);
+    auto lightQuat = DirectX::XMQuaternionRotationRollPitchYaw(
+        XMConvertToRadians(25.0f) * deltaTime,
+        XMConvertToRadians(35.0f) * deltaTime,
+        .0f);
 
-    //XMVECTOR position = XMVectorSet(posX, posY, posZ, 1.0f);
-    //XMVECTOR target = XMVectorZero();
-    //XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    //XMMATRIX view = XMMatrixLookAtLH(position, target, up);
+    lightPos = DirectX::XMVector3Rotate(lightPos, lightQuat);
 
-    //XMMATRIX proj = XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(60.0f), 960.0f / 720.0f, 0.1f, 1000.0f);
+    auto lightModel = DirectX::XMLoadFloat4x4(&_lightModel);
+    lightModel = DirectX::XMMatrixTranslationFromVector(lightPos);
 
-    //static float dx{};
-    //static float dy{};
+    XMStoreFloat3(&_lightPos, lightPos);
+    XMStoreFloat4x4(&_lightModel, lightModel);
 
-    //dx += 80.0f * (float)_timer.GetElapsedSeconds();
-    //dy += 50.0f * (float)_timer.GetElapsedSeconds();
-
-    //XMMATRIX world = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(dx)) * DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(dy));
-
-    //XMMATRIX worldViewProj = world * view * proj;
-    //XMStoreFloat4x4(&_cubeWorldViewProj, worldViewProj);
+    // Move teapot
+    auto tpModel = XMLoadFloat4x4(&_tpModel);
+    tpModel = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+    XMStoreFloat4x4(&_tpModel, tpModel);
 }
 
 void Game::Render()
@@ -153,17 +157,15 @@ void Game::Render()
     CBPerObjectData cbPerObjecData{};
 
     // Bind per frame cb
-    XMMATRIX viewPorj = _camera.GetView() * _camera.GetProjection();
-    XMStoreFloat4x4(&cbPerFrameData.WorldViewProjection, XMMatrixTranspose(viewPorj));
+    XMStoreFloat4x4(&cbPerFrameData.View, XMMatrixTranspose(_camera.GetView()));
+    XMStoreFloat4x4(&cbPerFrameData.Projection, XMMatrixTranspose(_camera.GetProjection()));
 
     XMVECTOR lightCol = XMVectorSet(255.0f / 255.0f, 235.0f / 255.0f, 220.0f / 255.0f, 1.0f);
     XMStoreFloat4(&cbPerFrameData.LightColor, lightCol);
 
-    XMVECTOR lightPos = XMVectorSet(3.0f, 4.0f, 5.0f, 0.0f);
-    XMStoreFloat3(&cbPerFrameData.LightPosition, lightPos);
-
-    XMVECTOR viewPosition = _camera.GetPosition();
-    XMStoreFloat3(&cbPerFrameData.ViewPosition, viewPosition);
+    XMVECTOR lightWorldPos = XMLoadFloat3(&_lightPos);
+    XMVECTOR lightViewPos = XMVector3Transform(lightWorldPos, _camera.GetView());
+    XMStoreFloat3(&cbPerFrameData.LightViewPosition, lightViewPos);
 
     _cbPerFrame->SetData(&cbPerFrameData);
     _cbPerFrame->BindVS(1);
@@ -176,7 +178,8 @@ void Game::Render()
 
     // Light source
     // Bind per object cb
-    XMStoreFloat4x4(&cbPerObjecData.Transform, XMMatrixTranspose(XMMatrixTranslationFromVector(lightPos)));
+    auto lightModel = XMLoadFloat4x4(&_lightModel);
+    XMStoreFloat4x4(&cbPerObjecData.Model, XMMatrixTranspose(lightModel));
     _cbPerObject->SetData(&cbPerObjecData);
     _cbPerObject->BindVS(0);
     _cbPerObject->BindPS(0);
@@ -198,10 +201,12 @@ void Game::Render()
     // Draw objects
 
     // Teapot
-
     // Bind per object cb
     cbPerObjecData.ObjectColor = XMFLOAT4{ 1.0f, 0.5f, 0.31f, 1.0f };
-    XMStoreFloat4x4(&cbPerObjecData.Transform, XMMatrixTranspose(XMMatrixIdentity()));
+    auto tpModel = XMLoadFloat4x4(&_tpModel);
+    XMStoreFloat4x4(&cbPerObjecData.Model, XMMatrixTranspose(tpModel));
+    auto modelView = tpModel * _camera.GetView();
+    XMStoreFloat4x4(&cbPerObjecData.NormalMatrix, XMMatrixInverse(nullptr, modelView));
     _cbPerObject->SetData(&cbPerObjecData);
     _cbPerObject->BindVS(0);
     _cbPerObject->BindPS(0);
