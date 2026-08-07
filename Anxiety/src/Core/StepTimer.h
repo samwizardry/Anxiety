@@ -154,4 +154,4 @@ private:
     uint64_t m_targetElapsedTicks;
 };
 
-} // namespace Anx
+}

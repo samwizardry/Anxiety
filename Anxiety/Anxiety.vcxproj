@@ -13,6 +13,8 @@
   <ItemGroup>
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Camera.cpp" />
+    <ClCompile Include="src\Editor.cpp" />
+    <ClCompile Include="src\Input\Input.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics\D3D11\Buffer.cpp" />
@@ -28,11 +30,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\ImGui\ImGuiRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Camera.h" />
-    <ClInclude Include="src\Input\Gamepad.h" />
+    <ClInclude Include="src\Core\EventDispatcher.h" />
+    <ClInclude Include="src\Core\Root.h" />
+    <ClInclude Include="src\Core\Timestamp.h" />
+    <ClInclude Include="src\Core\Utils.h" />
+    <ClInclude Include="src\Editor.h" />
+    <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\Input\Keyboard.h" />
     <ClInclude Include="src\Core\StepTimer.h" />
     <ClInclude Include="src\Game.h" />
@@ -44,8 +52,10 @@
     <ClInclude Include="src\Graphics\Geometry.h" />
     <ClInclude Include="src\Input\Mouse.h" />
     <ClInclude Include="src\Math\Bezier.h" />
+    <ClInclude Include="src\Core\Colors.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\ImGui\ImGuiRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Graphics\TeapotData.inc" />
@@ -69,6 +79,11 @@
     <None Include="res\Shaders\LightSource.hlsl">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vendor\ImGui\ImGui.vcxproj">
+      <Project>{7337d722-f250-497c-8d2a-22a9b376a62e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
@@ -118,7 +133,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)Vendor\SDL3-3.4.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)Vendor\SDL3-3.4.12\include;$(SolutionDir)Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -145,7 +160,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)Vendor\SDL3-3.4.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)Vendor\SDL3-3.4.12\include;$(SolutionDir)Vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>

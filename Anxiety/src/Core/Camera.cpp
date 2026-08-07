@@ -7,10 +7,20 @@ using namespace DirectX;
 namespace Anx {
 
 Camera::Camera(DirectX::FXMVECTOR position, float fov, float aspectRatio, float nearZ, float farZ)
+    : _fov{ fov }
+    , _aspectRatio{ aspectRatio }
+    , _nearZ{ nearZ }
+    , _farZ{ farZ }
 {
     DirectX::XMStoreFloat3(&_position, position);
 
     auto proj = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ);
+    DirectX::XMStoreFloat4x4(&_projection, proj);
+}
+
+void Camera::SetAspectRatio(float aspectRatio)
+{
+    auto proj = DirectX::XMMatrixPerspectiveFovLH(_fov, aspectRatio, _nearZ, _farZ);
     DirectX::XMStoreFloat4x4(&_projection, proj);
 }
 

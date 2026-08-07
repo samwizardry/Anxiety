@@ -2,10 +2,25 @@
 
 #include "Application.h"
 
+#include "EventDispatcher.h"
+#include "Utils.h"
+#include "Colors.h"
+#include "../Input/Input.h"
+
+using namespace DirectX;
+
 namespace Anx {
+
+Application* Application::s_Instance;
 
 Application::Application()
 {
+    if (s_Instance)
+    {
+        throw std::runtime_error{ "Application already exists!" };
+    }
+
+    s_Instance = this;
 }
 
 Application::~Application()
@@ -14,6 +29,9 @@ Application::~Application()
 
 SDL_AppResult Application::Init()
 {
+    //--------------------------------------------------------------------------------------
+    // Init platform systems
+    //--------------------------------------------------------------------------------------
     SDL_SetAppMetadata("anxiety", "1.0", "samwizardry.anxiety");
 
     if (!SDL_Init(SDL_INIT_VIDEO))
@@ -26,7 +44,7 @@ SDL_AppResult Application::Init()
     int height = 720;
 
     _window = SDL_CreateWindow("Anxiety", width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
-    if (_window == nullptr)
+    if (!_window)
     {
         SDL_Log("Couldn't create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
@@ -39,6 +57,8 @@ SDL_AppResult Application::Init()
             SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
             width, height, true
         };
+
+        _graphicsDevice->SetClearColor(Anx::Colors::VeryDarkGray);
     }
     catch (const std::exception ex)
     {
@@ -48,7 +68,17 @@ SDL_AppResult Application::Init()
 
     SDL_ShowWindow(_window);
 
-    _mouse.SetWindow(_window);
+    //--------------------------------------------------------------------------------------
+    // Init application systems
+    //--------------------------------------------------------------------------------------
+
+    // Input
+    Keyboard::Init();
+    Mouse::Init();
+    Mouse::SetWindow(_window);
+
+    // ImGui
+    _imGuiRenderer = new ImGuiRenderer(_window, _graphicsDevice);
 
     Startup();
 
@@ -58,6 +88,15 @@ SDL_AppResult Application::Init()
 SDL_AppResult Application::Shutdown()
 {
     Cleanup();
+
+    if (_imGuiRenderer)
+    {
+        delete _imGuiRenderer;
+        _imGuiRenderer = nullptr;
+    }
+
+    Keyboard::Shutdown();
+    Mouse::Shutdown();
 
     if (_graphicsDevice != nullptr)
     {
@@ -75,39 +114,50 @@ SDL_AppResult Application::HandleEvent(SDL_Event* event)
         return SDL_APP_SUCCESS; /* end the program, reporting success to the OS. */
     }
 
-    if (event->type == SDL_EVENT_KEY_DOWN)
-    {
-        if (event->key.scancode == SDL_SCANCODE_ESCAPE)
-        {
-            return SDL_APP_SUCCESS;
-        }
-    }
+    EventDispatcher dispatcher{ *event };
+    dispatcher.Dispatch(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, ANX_BIND_CALLBACK(OnResize));
 
-    if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
-    {
-        _graphicsDevice->ResizeSwapChain(static_cast<int>(event->window.data1), static_cast<int>(event->window.data2));
-    }
+    _imGuiRenderer->OnEvent(*event);
+    OnEvent(*event);
 
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult Application::Frame()
 {
-    _keyboard.Update();
-    _mouse.Update();
+    Keyboard::Update();
+    Mouse::Update();
 
     _timer.Tick([this]()
         {
-            Update();
+            Update(static_cast<float>(_timer.GetElapsedSeconds()));
         });
 
     _graphicsDevice->BindRenderTargetViewAndDepthStencilView();
+    _graphicsDevice->Clear();
 
     Render();
+
+    _imGuiRenderer->Begin();
+    RenderEditor();
+    _imGuiRenderer->End();
 
     _graphicsDevice->Present();
 
     return SDL_APP_CONTINUE;
+}
+
+void Application::OnResize(const SDL_Event& event)
+{
+    const SDL_WindowEvent& window = event.window;
+
+    int width = static_cast<int>(window.data1);
+    int height = static_cast<int>(window.data2);
+
+    if (width > 0 && height > 0)
+    {
+        _graphicsDevice->ResizeSwapChain(width, height);
+    }
 }
 
 }

@@ -4,6 +4,8 @@
 
 #include "Utils.h"
 
+using namespace DirectX;
+
 namespace Anx {
 
 GraphicsDevice::GraphicsDevice(void* windowHandle, int width, int height, bool windowed)
@@ -205,14 +207,22 @@ void GraphicsDevice::ResizeSwapChain(int width, int height)
 
 void GraphicsDevice::Present()
 {
-    //ThrowIfFailed(_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
-    ThrowIfFailed(_swapChain->Present(1, 0));
+    ThrowIfFailed(_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
+    //ThrowIfFailed(_swapChain->Present(1, 0));
 }
 
-void GraphicsDevice::Clear(const float color[4])
+void GraphicsDevice::Clear()
 {
-    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), color);
+    _deviceContext->ClearRenderTargetView(_renderTargetView.Get(), _clearColor);
     _deviceContext->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+void GraphicsDevice::SetClearColor(const float clearColor[4])
+{
+    _clearColor[0] = clearColor[0];
+    _clearColor[1] = clearColor[1];
+    _clearColor[2] = clearColor[2];
+    _clearColor[3] = clearColor[3];
 }
 
 }

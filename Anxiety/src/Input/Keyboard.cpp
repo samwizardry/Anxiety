@@ -4,46 +4,48 @@
 
 namespace Anx {
 
-Keyboard::Keyboard()
-{
-    auto state = SDL_GetKeyboardState(&_numKeys);
+int Keyboard::s_NumKeys;
+bool* Keyboard::s_CurrState;
+bool* Keyboard::s_PrevState;
 
-    _currState = new bool[_numKeys] {false};
-    _prevState = new bool[_numKeys] {false};
+void Keyboard::Init()
+{
+    auto state = SDL_GetKeyboardState(&s_NumKeys);
+    s_CurrState = new bool[s_NumKeys] {false};
+    s_PrevState = new bool[s_NumKeys] {false};
 }
 
-Keyboard::~Keyboard()
+void Keyboard::Shutdown()
 {
-    delete[] _currState;
-    delete[] _prevState;
-}
-
-bool Keyboard::IsKeyDown(SDL_Scancode scancode) const
-{
-    return _currState[scancode];
-}
-
-bool Keyboard::IsKeyUp(SDL_Scancode scancode) const
-{
-    return !_currState[scancode];
-}
-
-bool Keyboard::IsKeyPressed(SDL_Scancode scancode) const
-{
-    return _currState[scancode] && !_prevState[scancode];
-}
-
-bool Keyboard::IsKeyReleased(SDL_Scancode scancode) const
-{
-    return !_currState[scancode] && _prevState[scancode];
+    delete[] s_CurrState;
+    delete[] s_PrevState;
 }
 
 void Keyboard::Update()
 {
-    std::memcpy(_prevState, _currState, sizeof(bool) * _numKeys);
-
+    std::memcpy(s_PrevState, s_CurrState, sizeof(bool) * s_NumKeys);
     auto state = SDL_GetKeyboardState(nullptr);
-    std::memcpy(_currState, state, sizeof(bool) * _numKeys);
+    std::memcpy(s_CurrState, state, sizeof(bool) * s_NumKeys);
+}
+
+bool Keyboard::IsKeyDown(SDL_Scancode scancode)
+{
+    return s_CurrState[scancode];
+}
+
+bool Keyboard::IsKeyUp(SDL_Scancode scancode)
+{
+    return !s_CurrState[scancode];
+}
+
+bool Keyboard::IsKeyPressed(SDL_Scancode scancode)
+{
+    return s_CurrState[scancode] && !s_PrevState[scancode];
+}
+
+bool Keyboard::IsKeyReleased(SDL_Scancode scancode)
+{
+    return !s_CurrState[scancode] && s_PrevState[scancode];
 }
 
 }

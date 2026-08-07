@@ -2,15 +2,19 @@
 
 #include "Game.h"
 
+#include "Core/Utils.h"
+#include "Core/EventDispatcher.h"
 #include "Graphics/D3D11/VertexTypes.h"
 #include "Graphics/Geometry.h"
 #include "Math/Math.h"
+
 
 using namespace DirectX;
 using namespace Anx;
 
 Game::Game()
 {
+
 }
 
 Game::~Game()
@@ -19,7 +23,9 @@ Game::~Game()
 
 void Game::Startup()
 {
-    _posColShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
+    _graphicsDevice = Application::GetGraphicsDevice();
+
+    _posColShader = new Shader{  _graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
     _posNormTexShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionNormalTexture.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
     _lightShader = new Shader{ _graphicsDevice, L"res/Shaders/Light.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
     _lightSourceShader = new Shader{ _graphicsDevice, L"res/Shaders/LightSource.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
@@ -49,9 +55,14 @@ void Game::Cleanup()
 {
     delete _posColShader;
     delete _posNormTexShader;
+    delete _lightShader;
+    delete _lightSourceShader;
 
     delete _cbPerObject;
     delete _cbPerFrame;
+
+    delete _lightVB;
+    delete _lightIB;
 
     delete _cubeVB;
     delete _cubeIB;
@@ -60,60 +71,89 @@ void Game::Cleanup()
     delete _tpIB;
 }
 
-void Game::Update()
+void Game::OnEvent(const SDL_Event& event)
 {
-    double deltaTime = _timer.GetElapsedSeconds();
+    EventDispatcher dispatcher{ event };
+    dispatcher.Dispatch(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, ANX_BIND_CALLBACK(OnResize));
+    dispatcher.Dispatch(SDL_EVENT_KEY_DOWN, ANX_BIND_CALLBACK(OnKeyDown));
+}
 
+void Game::OnResize(const SDL_Event& event)
+{
+    const SDL_WindowEvent& window = event.window;
+
+    float width = static_cast<float>(window.data1);
+    float height = static_cast<float>(window.data2);
+
+    if (width > 0 && height > 0)
+    {
+        _camera.SetAspectRatio(width / height);
+    }
+}
+
+void Game::OnKeyDown(const SDL_Event& event)
+{
+    const SDL_KeyboardEvent& key = event.key;
+    if (key.scancode == SDL_SCANCODE_ESCAPE)
+    {
+        SDL_Event quit{};
+        quit.type = SDL_EVENT_QUIT;
+        SDL_PushEvent(&quit);
+    }
+}
+
+void Game::Update(float deltaTime)
+{
     // Fps counter
 
-    static double elapsedSeconds = 0;
-    static std::string originalTitle = std::string{ SDL_GetWindowTitle(_window) };
+    //static double elapsedSeconds = 0;
+    //static std::string originalTitle = std::string{ SDL_GetWindowTitle(_window) };
 
-    elapsedSeconds += deltaTime;
+    //elapsedSeconds += deltaTime;
 
-    if (elapsedSeconds >= 1.0)
-    {
-        std::string title = std::format("{} FPS: {}", originalTitle, _timer.GetFramesPerSecond());
-        SDL_SetWindowTitle(_window, title.c_str());
-        elapsedSeconds -= 1.0;
-    }
+    //if (elapsedSeconds >= 1.0)
+    //{
+    //    std::string title = std::format("{} FPS: {}", originalTitle, timer.GetFramesPerSecond());
+    //    SDL_SetWindowTitle(_window, title.c_str());
+    //    elapsedSeconds -= 1.0;
+    //}
 
     // Update camera
 
     static bool isFpsMode = false;
 
-    if (_mouse.IsButtonPressed(MouseButton::Right))
+    if (Mouse::IsButtonPressed(MouseButton::Right))
     {
-        _mouse.SetFpsMode(true);
+        Mouse::SetFpsMode(true);
         isFpsMode = true;
     }
-    if (_mouse.IsButtonReleased(MouseButton::Right))
+    if (Mouse::IsButtonReleased(MouseButton::Right))
     {
-        _mouse.SetFpsMode(false);
+        Mouse::SetFpsMode(false);
         isFpsMode = false;
     }
 
     if (isFpsMode)
     {
-        auto pos = _mouse.Pos();
+        auto pos = Mouse::Delta();
         _camera.Rotate(pos.X, pos.Y);
     }
 
     XMVECTOR direction = DirectX::g_XMZero;
 
-    if (_keyboard.IsKeyDown(SDL_SCANCODE_W))
+    if (Keyboard::IsKeyDown(SDL_SCANCODE_W))
     {
         direction = XMVectorAdd(direction, Anx::g_XMForward);
     }
-    if (_keyboard.IsKeyDown(SDL_SCANCODE_S))
+    if (Keyboard::IsKeyDown(SDL_SCANCODE_S))
     {
         direction = XMVectorAdd(direction, Anx::g_XMBack);
     }
-    if (_keyboard.IsKeyDown(SDL_SCANCODE_A))
+    if (Keyboard::IsKeyDown(SDL_SCANCODE_A))
     {
         direction = XMVectorAdd(direction, Anx::g_XMLeft);
     }
-    if (_keyboard.IsKeyDown(SDL_SCANCODE_D))
+    if (Keyboard::IsKeyDown(SDL_SCANCODE_D))
     {
         direction = XMVectorAdd(direction, Anx::g_XMRight);
     }
@@ -148,9 +188,6 @@ void Game::Update()
 
 void Game::Render()
 {
-    static constexpr float clearColor[4] = { 0.15f, 0.15f, 0.15f, 1.0f };
-    _graphicsDevice->Clear(clearColor);
-
     auto context = _graphicsDevice->GetContext();
 
     CBPerFrameData cbPerFrameData{};
@@ -221,4 +258,8 @@ void Game::Render()
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->DrawIndexed(_tpIndexCount, 0, 0);
+}
+
+void Game::RenderEditor()
+{
 }

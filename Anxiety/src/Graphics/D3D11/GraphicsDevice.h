@@ -6,6 +6,8 @@
 #include <wrl.h>
 #include <wrl/client.h>
 
+#include <DirectXMath.h>
+
 namespace Anx {
 
 class GraphicsDevice
@@ -23,10 +25,14 @@ public:
     inline ID3D11Device* GetDevice() { return _device.Get(); }
     inline ID3D11DeviceContext* GetContext() { return _deviceContext.Get(); }
 
-    void ResizeSwapChain(int width, int height);
     void BindRenderTargetViewAndDepthStencilView();
+
+    void ResizeSwapChain(int width, int height);
+
+    void SetClearColor(const float clearColor[4]);
+    void Clear();
     void Present();
-    void Clear(const float color[4]);
+
 private:
     void CreateRenderTargetView();
     void CreateDepthStencilBufferAndView(int width, int height);
@@ -42,6 +48,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _depthStencilView;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> _rasterizerState;
     D3D11_VIEWPORT _viewport{};
+
+    float _clearColor[4]{ .0f, .0f, .0f, 1.f };
 };
 
 }

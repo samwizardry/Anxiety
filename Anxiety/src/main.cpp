@@ -7,8 +7,9 @@
 #include "Game.h"
 
 /* This function runs once at startup. */
-SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
+SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
+
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -33,7 +34,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 }
 
 /* This function runs once at shutdown. */
-void SDL_AppQuit(void* appstate, SDL_AppResult result)
+void SDL_AppQuit(void* appstate, [[maybe_unused]] SDL_AppResult result)
 {
     /* SDL will clean up the window/renderer for us. */
 

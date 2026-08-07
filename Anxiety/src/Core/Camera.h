@@ -26,12 +26,19 @@ public:
         return DirectX::XMLoadFloat3(&_position);
     }
 
+    virtual void SetAspectRatio(float aspectRatio);
+
     virtual void Update(float deltaTime) = 0;
 
 protected:
+    DirectX::XMFLOAT3 _position{};
+    float _fov{};
+    float _aspectRatio{};
+    float _nearZ{};
+    float _farZ{};
+
     DirectX::XMFLOAT4X4 _view{};
     DirectX::XMFLOAT4X4 _projection{};
-    DirectX::XMFLOAT3 _position{};
 };
 
 class FreeCamera : public Camera

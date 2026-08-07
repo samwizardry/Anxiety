@@ -2,23 +2,13 @@
 
 namespace Anx {
 
-struct MousePos
+struct MousePosition
 {
     float X;
     float Y;
-
-    bool operator=(float value)
-    {
-        return X == value && Y == value;
-    }
-
-    bool operator!=(float value)
-    {
-        return !(X == value && Y == value);
-    }
 };
 
-enum class MouseButton : Uint32
+enum class MouseButton : uint32_t
 {
     Left = SDL_BUTTON_LMASK,
     Middle = SDL_BUTTON_MMASK,
@@ -30,8 +20,8 @@ enum class MouseButton : Uint32
 class Mouse
 {
 public:
-    Mouse();
-    ~Mouse();
+    Mouse() = delete;
+    ~Mouse() = delete;
 
     Mouse(Mouse&&) = delete;
     Mouse& operator=(Mouse&&) = delete;
@@ -39,32 +29,37 @@ public:
     Mouse(const Mouse&) = delete;
     Mouse& operator=(const Mouse&) = delete;
 
-    inline void SetWindow(SDL_Window* window) { _window = window; }
-
     /// <summary>
     /// Для FPS режима возвращаеться дельта позиции, для обычного режима координаты относительно окна.
     /// </summary>
-    inline MousePos Pos() const { return { _x, _y }; }
+    static MousePosition Position();
+    static MousePosition Delta();
 
-    bool IsButtonDown(MouseButton button) const;
-    bool IsButtonUp(MouseButton button) const;
+    static bool IsButtonDown(MouseButton button);
+    static bool IsButtonUp(MouseButton button);
 
-    bool IsButtonPressed(MouseButton button) const;
-    bool IsButtonReleased(MouseButton button) const;
+    static bool IsButtonPressed(MouseButton button);
+    static bool IsButtonReleased(MouseButton button);
 
-    void Update();
-
-    void SetFpsMode(bool mode);
+    static void SetFpsMode(bool mode);
 
 private:
-    SDL_Window* _window{};
+    friend class Application;
 
-    float _x{};
-    float _y{};
-    SDL_MouseButtonFlags _currState{};
-    SDL_MouseButtonFlags _prevState{};
+    static void Init();
+    static void Shutdown();
+    static void SetWindow(SDL_Window* window);
+    static void Update();
 
-    SDL_MouseButtonFlags(*_getMouseState) (float* x, float* y) { SDL_GetMouseState };
+private:
+    static SDL_Window* s_Window;
+
+    static float s_X;
+    static float s_Y;
+    static SDL_MouseButtonFlags s_CurrState;
+    static SDL_MouseButtonFlags s_PrevState;
+
+    static SDL_MouseButtonFlags(*s_GetMouseState) (float* x, float* y);
 };
 
 }

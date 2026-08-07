@@ -4,56 +4,81 @@
 
 namespace Anx {
 
-Mouse::Mouse()
+SDL_Window* Mouse::s_Window;
+
+float Mouse::s_X;
+float Mouse::s_Y;
+SDL_MouseButtonFlags Mouse::s_CurrState;
+SDL_MouseButtonFlags Mouse::s_PrevState;
+
+SDL_MouseButtonFlags(*Mouse::s_GetMouseState) (float* x, float* y);
+
+void Mouse::Init()
 {
-    _currState = _getMouseState(&_x, &_y);
-    _prevState = _currState;
+    s_GetMouseState = SDL_GetMouseState;
+    s_CurrState = s_GetMouseState(&s_X, &s_Y);
+    s_PrevState = s_CurrState;
 }
 
-Mouse::~Mouse()
+void Mouse::Shutdown()
 {
 }
 
-bool Mouse::IsButtonDown(MouseButton button) const
+void Mouse::SetWindow(SDL_Window* window)
 {
-    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
-    return (_currState & mask) == mask;
-}
-
-bool Mouse::IsButtonUp(MouseButton button) const
-{
-    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
-    return (_currState & mask) != mask;
-}
-
-bool Mouse::IsButtonPressed(MouseButton button) const
-{
-    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
-    return (_currState & mask) == mask && (_prevState & mask) != mask;
-}
-
-bool Mouse::IsButtonReleased(MouseButton button) const
-{
-    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
-    return (_currState & mask) != mask && (_prevState & mask) == mask;
+    s_Window = window;
 }
 
 void Mouse::Update()
 {
-    _prevState = _currState;
-    _currState = _getMouseState(&_x, &_y);
+    s_PrevState = s_CurrState;
+    s_CurrState = s_GetMouseState(&s_X, &s_Y);
+}
+
+MousePosition Mouse::Position()
+{
+    return MousePosition{ s_X, s_Y };
+}
+
+MousePosition Mouse::Delta()
+{
+    return MousePosition{ s_X, s_Y };
+}
+
+bool Mouse::IsButtonDown(MouseButton button)
+{
+    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
+    return (s_CurrState & mask) == mask;
+}
+
+bool Mouse::IsButtonUp(MouseButton button)
+{
+    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
+    return (s_CurrState & mask) != mask;
+}
+
+bool Mouse::IsButtonPressed(MouseButton button)
+{
+    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
+    return (s_CurrState & mask) == mask && (s_PrevState & mask) != mask;
+}
+
+bool Mouse::IsButtonReleased(MouseButton button)
+{
+    const auto mask = static_cast<SDL_MouseButtonFlags>(button);
+    return (s_CurrState & mask) != mask && (s_PrevState & mask) == mask;
 }
 
 void Mouse::SetFpsMode(bool isFps)
 {
-    SDL_SetWindowRelativeMouseMode(_window, isFps);
+    SDL_SetWindowRelativeMouseMode(s_Window, isFps);
 
-    _getMouseState = isFps ? SDL_GetRelativeMouseState : SDL_GetMouseState;
+    s_GetMouseState = isFps ? SDL_GetRelativeMouseState : SDL_GetMouseState;
 
     // Два вызова, так-как дельта не равна 0 при первом вызове, из-за накопительного эффекта
-    _currState = _getMouseState(nullptr, nullptr);
-    _currState = _getMouseState(&_x, &_y);
-    _prevState = _currState;
+    s_CurrState = s_GetMouseState(nullptr, nullptr);
+    s_CurrState = s_GetMouseState(&s_X, &s_Y);
+    s_PrevState = s_CurrState;
 }
 
 }

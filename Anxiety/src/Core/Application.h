@@ -6,6 +6,7 @@
 #include "../Graphics/D3D11/GraphicsDevice.h"
 #include "../Input/Keyboard.h"
 #include "../Input/Mouse.h"
+#include "../ImGui/ImGuiRenderer.h"
 
 namespace Anx {
 
@@ -20,6 +21,10 @@ public:
 
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;
+
+    //--------------------------------------------------------------------------------------
+    // SDL pipeline
+    //--------------------------------------------------------------------------------------
 
     /// <summary>
     /// This function runs once at startup.
@@ -41,20 +46,49 @@ public:
     /// </summary>
     SDL_AppResult Frame();
 
+    static Application* Get() { return s_Instance; }
+
+    //--------------------------------------------------------------------------------------
+    // Platform systems
+    //--------------------------------------------------------------------------------------
+    SDL_Window* GetWindow() { return _window; }
+    GraphicsDevice* GetGraphicsDevice() { return _graphicsDevice; }
+
+    //--------------------------------------------------------------------------------------
+    // Application systems
+    //--------------------------------------------------------------------------------------
+    const StepTimer& GetTimer() const { return _timer; }
+
 protected:
     virtual void Startup() = 0;
     virtual void Cleanup() = 0;
-    virtual void Update() = 0;
-    virtual void Render() = 0;
 
-protected:
-    SDL_Window* _window{ nullptr };
-    Anx::GraphicsDevice* _graphicsDevice{ nullptr };
-    StepTimer _timer{};
-    Keyboard _keyboard{};
-    Mouse _mouse{};
+    virtual void OnEvent(const SDL_Event& event) = 0;
+
+    virtual void Update(float deltaTime) = 0;
+    virtual void Render() = 0;
+    virtual void RenderEditor() = 0;
 
 private:
+    //--------------------------------------------------------------------------------------
+    // Application events
+    //--------------------------------------------------------------------------------------
+    void OnResize(const SDL_Event& event);
+
+private:
+    static Application* s_Instance;
+
+    //--------------------------------------------------------------------------------------
+    // Platform systems
+    //--------------------------------------------------------------------------------------
+    SDL_Window* _window{ nullptr };
+    GraphicsDevice* _graphicsDevice{ nullptr };
+
+    //--------------------------------------------------------------------------------------
+    // Application systems
+    //--------------------------------------------------------------------------------------
+    StepTimer _timer{};
+    ImGuiRenderer* _imGuiRenderer{ nullptr };
 };
 
 }

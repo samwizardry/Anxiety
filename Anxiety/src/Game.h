@@ -16,10 +16,20 @@ public:
 protected:
     void Startup() override;
     void Cleanup() override;
-    void Update() override;
+
+    void OnEvent(const SDL_Event& event) override;
+
+    void Update(float deltaTime) override;
     void Render() override;
+    void RenderEditor() override;
 
 private:
+    void OnResize(const SDL_Event& event);
+    void OnKeyDown(const SDL_Event& event);
+
+private:
+    Anx::GraphicsDevice* _graphicsDevice{ nullptr };
+
     struct CBPerObjectData
     {
         DirectX::XMFLOAT4X4 Model{};
@@ -36,7 +46,7 @@ private:
         float Pad0{};
     };
 
-    Anx::FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f};
+    Anx::FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f };
 
     Anx::Shader* _posColShader{};
     Anx::Shader* _posNormTexShader{};

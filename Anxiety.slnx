@@ -3,4 +3,5 @@
     <Platform Name="x64" />
   </Configurations>
   <Project Path="Anxiety/Anxiety.vcxproj" Id="678df848-4d18-4d4a-8f6b-a08a7e8abf98" />
+  <Project Path="Vendor/ImGui/ImGui.vcxproj" Id="7337d722-f250-497c-8d2a-22a9b376a62e" />
 </Solution>
