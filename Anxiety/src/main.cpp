@@ -5,10 +5,12 @@
 #include <SDL3/SDL_main.h>
 
 #include "Game.h"
+#include "Core/Log.h"
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
+    ANX_INFO("SDL_AppInit\n");
 
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -16,7 +18,22 @@ SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_un
 
     auto app = new Game();
     *appstate = app;
-    return app->Init();
+
+    SDL_AppResult result{ SDL_APP_FAILURE };
+
+    Anx::ApplicationOptions options{};
+    options.WindowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
+
+    try
+    {
+        result = app->Init(options);
+    }
+    catch (const std::exception& ex)
+    {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", ex.what(), nullptr);
+    }
+
+    return result;
 }
 
 /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
@@ -37,6 +54,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 void SDL_AppQuit(void* appstate, [[maybe_unused]] SDL_AppResult result)
 {
     /* SDL will clean up the window/renderer for us. */
+    ANX_INFO("SDL_AppQuit\n");
 
     auto app = static_cast<Anx::Application*>(appstate);
     app->Shutdown();

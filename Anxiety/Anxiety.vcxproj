@@ -36,7 +36,7 @@
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Camera.h" />
     <ClInclude Include="src\Core\EventDispatcher.h" />
-    <ClInclude Include="src\Core\Root.h" />
+    <ClInclude Include="src\Core\Log.h" />
     <ClInclude Include="src\Core\Timestamp.h" />
     <ClInclude Include="src\Core\Utils.h" />
     <ClInclude Include="src\Editor.h" />

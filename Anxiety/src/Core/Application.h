@@ -10,6 +10,14 @@
 
 namespace Anx {
 
+struct ApplicationOptions
+{
+    std::string Title{ "Anxiety" };
+    int Width{ 960 };
+    int Height{ 720 };
+    uint64_t WindowFlags{};
+};
+
 class Application
 {
 public:
@@ -29,7 +37,7 @@ public:
     /// <summary>
     /// This function runs once at startup.
     /// </summary>
-    SDL_AppResult Init();
+    SDL_AppResult Init(const ApplicationOptions& options);
 
     /// <summary>
     /// This function runs once at shutdown.
@@ -81,14 +89,14 @@ private:
     //--------------------------------------------------------------------------------------
     // Platform systems
     //--------------------------------------------------------------------------------------
-    SDL_Window* _window{ nullptr };
-    GraphicsDevice* _graphicsDevice{ nullptr };
+    SDL_Window* _window{};
+    GraphicsDevice* _graphicsDevice{};
 
     //--------------------------------------------------------------------------------------
     // Application systems
     //--------------------------------------------------------------------------------------
     StepTimer _timer{};
-    ImGuiRenderer* _imGuiRenderer{ nullptr };
+    ImGuiRenderer* _imGuiRenderer{};
 };
 
 }

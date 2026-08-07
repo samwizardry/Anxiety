@@ -3,6 +3,7 @@
 #include "Game.h"
 
 #include "Core/Utils.h"
+#include "Core/Log.h"
 #include "Core/EventDispatcher.h"
 #include "Graphics/D3D11/VertexTypes.h"
 #include "Graphics/Geometry.h"
@@ -14,61 +15,49 @@ using namespace Anx;
 
 Game::Game()
 {
-
+    ANX_INFO("Game ctor\n");
 }
 
 Game::~Game()
 {
+    ANX_INFO("Game dector\n");
 }
 
 void Game::Startup()
 {
+    ANX_INFO("Game startup\n");
+
     _graphicsDevice = Application::GetGraphicsDevice();
 
-    _posColShader = new Shader{  _graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount };
-    _posNormTexShader = new Shader{ _graphicsDevice, L"res/Shaders/PositionNormalTexture.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
-    _lightShader = new Shader{ _graphicsDevice, L"res/Shaders/Light.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
-    _lightSourceShader = new Shader{ _graphicsDevice, L"res/Shaders/LightSource.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
+    // Shaders
+    _posColShader = CreateUnique<Shader>(_graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount);
+    _posNormTexShader = CreateUnique<Shader>(_graphicsDevice, L"res/Shaders/PositionNormalTexture.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount);
+    _lightShader = CreateUnique<Shader>(_graphicsDevice, L"res/Shaders/Light.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount);
+    _lightSourceShader = CreateUnique<Shader>(_graphicsDevice, L"res/Shaders/LightSource.hlsl", VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount);
 
     std::vector<VertexPositionNormalTexture> vertices{};
     std::vector<uint16_t> indices{};
 
-    _cbPerObject = new ConstantBuffer(_graphicsDevice, true, (sizeof(CBPerObjectData) + 255) & ~255, nullptr);
-    _cbPerFrame = new ConstantBuffer(_graphicsDevice, true, (sizeof(CBPerFrameData) + 255) & ~255, nullptr);
-
-    // Cube
+    // Constant buffers
+    _cbPerObject = CreateUnique<ConstantBuffer>(_graphicsDevice, true, static_cast<uint32_t>((sizeof(CBPerObjectData) + 255) & ~255), nullptr);
+    _cbPerFrame = CreateUnique<ConstantBuffer>(_graphicsDevice, true, static_cast<uint32_t>((sizeof(CBPerFrameData) + 255) & ~255), nullptr);
 
     // Light source
     Geometry::ComputeGeoSphere(vertices, indices, 1.0f, 5, false);
     _lightIndexCount = static_cast<uint32_t>(indices.size());
-    _lightVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
-    _lightIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
+    _lightVB = CreateUnique<VertexBuffer>(_graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data());
+    _lightIB = CreateUnique<IndexBuffer>(_graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data());
 
     // Teapot
     Geometry::ComputeTeapot(vertices, indices, 2.0f, 8, false);
     _tpIndexCount = static_cast<uint32_t>(indices.size());
-    _tpVB = new VertexBuffer{ _graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data() };
-    _tpIB = new IndexBuffer{ _graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data() };
+    _tpVB = CreateUnique<VertexBuffer>(_graphicsDevice, false, static_cast<uint32_t>(sizeof(VertexPositionNormalTexture) * vertices.size()), vertices.data());
+    _tpIB = CreateUnique<IndexBuffer>(_graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data());
 }
 
 void Game::Cleanup()
 {
-    delete _posColShader;
-    delete _posNormTexShader;
-    delete _lightShader;
-    delete _lightSourceShader;
-
-    delete _cbPerObject;
-    delete _cbPerFrame;
-
-    delete _lightVB;
-    delete _lightIB;
-
-    delete _cubeVB;
-    delete _cubeIB;
-
-    delete _tpVB;
-    delete _tpIB;
+    ANX_INFO("Game cleanup\n");
 }
 
 void Game::OnEvent(const SDL_Event& event)

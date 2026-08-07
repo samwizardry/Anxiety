@@ -4,6 +4,7 @@
 
 #include "Core/Application.h"
 #include "Core/Camera.h"
+#include "Core/Utils.h"
 #include "Graphics/D3D11/Shader.h"
 #include "Graphics/D3D11/Buffer.h"
 
@@ -48,28 +49,28 @@ private:
 
     Anx::FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f };
 
-    Anx::Shader* _posColShader{};
-    Anx::Shader* _posNormTexShader{};
-    Anx::Shader* _lightShader{};
-    Anx::Shader* _lightSourceShader{};
+    Anx::Unique<Anx::Shader> _posColShader{};
+    Anx::Unique<Anx::Shader> _posNormTexShader{};
+    Anx::Unique<Anx::Shader> _lightShader{};
+    Anx::Unique<Anx::Shader> _lightSourceShader{};
 
-    Anx::ConstantBuffer* _cbPerObject{};
-    Anx::ConstantBuffer* _cbPerFrame{};
+    Anx::Unique<Anx::ConstantBuffer> _cbPerObject{};
+    Anx::Unique<Anx::ConstantBuffer> _cbPerFrame{};
 
     uint32_t _cubeIndexCount{};
-    Anx::VertexBuffer* _cubeVB{};
-    Anx::IndexBuffer* _cubeIB{};
+    Anx::Unique<Anx::VertexBuffer> _cubeVB{};
+    Anx::Unique<Anx::IndexBuffer> _cubeIB{};
     DirectX::XMFLOAT4X4 _cubeModel{};
 
     // light source
     uint32_t _lightIndexCount{};
-    Anx::VertexBuffer* _lightVB{};
-    Anx::IndexBuffer* _lightIB{};
+    Anx::Unique<Anx::VertexBuffer> _lightVB{};
+    Anx::Unique<Anx::IndexBuffer> _lightIB{};
     DirectX::XMFLOAT3 _lightPos{ 5.0f, 0.0f, 5.0f };
     DirectX::XMFLOAT4X4 _lightModel{};
 
     uint32_t _tpIndexCount{};
-    Anx::VertexBuffer* _tpVB{};
-    Anx::IndexBuffer* _tpIB{};
+    Anx::Unique<Anx::VertexBuffer> _tpVB{};
+    Anx::Unique<Anx::IndexBuffer> _tpIB{};
     DirectX::XMFLOAT4X4 _tpModel{};
 };

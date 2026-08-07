@@ -2,6 +2,7 @@
 
 #include "Application.h"
 
+#include "Log.h"
 #include "EventDispatcher.h"
 #include "Utils.h"
 #include "Colors.h"
@@ -15,6 +16,7 @@ Application* Application::s_Instance;
 
 Application::Application()
 {
+    ANX_INFO("Application ctor\n");
     if (s_Instance)
     {
         throw std::runtime_error{ "Application already exists!" };
@@ -25,46 +27,40 @@ Application::Application()
 
 Application::~Application()
 {
+    ANX_INFO("Application dector\n");
 }
 
-SDL_AppResult Application::Init()
+SDL_AppResult Application::Init(const ApplicationOptions& options)
 {
+    ANX_INFO("Application init\n");
+
     //--------------------------------------------------------------------------------------
     // Init platform systems
     //--------------------------------------------------------------------------------------
     SDL_SetAppMetadata("anxiety", "1.0", "samwizardry.anxiety");
 
-    if (!SDL_Init(SDL_INIT_VIDEO))
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_CAMERA))
     {
-        SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
+        throw std::runtime_error{ std::format("Couldn't initialize SDL: {}", SDL_GetError()) };
     }
 
-    int width = 960;
-    int height = 720;
-
-    _window = SDL_CreateWindow("Anxiety", width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
+    _window = SDL_CreateWindow(
+        options.Title.c_str(),
+        options.Width, options.Height,
+        options.WindowFlags);
     if (!_window)
     {
-        SDL_Log("Couldn't create window: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
+        throw std::runtime_error{ std::format("Couldn't create window: {}", SDL_GetError()) };
     }
 
-    try
+    _graphicsDevice = new GraphicsDevice
     {
-        _graphicsDevice = new GraphicsDevice
-        {
-            SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
-            width, height, true
-        };
+        SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
+        options.Width, options.Height,
+        (options.WindowFlags & SDL_WINDOW_FULLSCREEN) != SDL_WINDOW_FULLSCREEN
+    };
 
-        _graphicsDevice->SetClearColor(Anx::Colors::VeryDarkGray);
-    }
-    catch (const std::exception ex)
-    {
-        SDL_Log("Couldn't initialize D3D11: %s", ex.what());
-        return SDL_APP_FAILURE;
-    }
+    _graphicsDevice->SetClearColor(Anx::Colors::VeryDarkGray);
 
     SDL_ShowWindow(_window);
 
@@ -88,6 +84,8 @@ SDL_AppResult Application::Init()
 SDL_AppResult Application::Shutdown()
 {
     Cleanup();
+
+    ANX_INFO("Application shutdown\n");
 
     if (_imGuiRenderer)
     {
