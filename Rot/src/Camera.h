@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Math/Math.h"
+#include <Anxiety.h>
 
-namespace Anx {
+namespace Rot {
 
 class Camera
 {

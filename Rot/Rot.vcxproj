@@ -17,26 +17,26 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f45571f0-4a9f-4aaa-ac4b-714588d25a4a}</ProjectGuid>
-    <RootNamespace>Anxiety</RootNamespace>
+    <ProjectGuid>{f99ce805-44ed-41f5-a4da-b95d1d13bf31}</ProjectGuid>
+    <RootNamespace>Rot</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Ship|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -73,25 +73,25 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)vendor\SDL3-3.4.12\include;$(SolutionDir)vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\SDL3-3.4.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)vendor\SDL3-3.4.12\lib\x64\SDL3.dll" "$(OutDir)"
+xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -100,25 +100,25 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)vendor\SDL3-3.4.12\include;$(SolutionDir)vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\SDL3-3.4.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)vendor\SDL3-3.4.12\lib\x64\SDL3.dll" "$(OutDir)"
+xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Ship|x64'">
@@ -127,75 +127,44 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ANX_SHIP;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ANX_SHIP;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Anxiety\src;$(SolutionDir)vendor\SDL3-3.4.12\include;$(SolutionDir)vendor\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\SDL3-3.4.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
+      <Command>xcopy /y /d "$(SolutionDir)vendor\SDL3-3.4.12\lib\x64\SDL3.dll" "$(OutDir)"
+xcopy /y /d /i /e "$(ProjectDir)res\Shaders\*" "$(OutDir)res\Shaders\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Anxiety.h" />
-    <ClInclude Include="src\AnxietyMain.h" />
-    <ClInclude Include="src\Core\Application.h" />
-    <ClInclude Include="src\Core\Colors.h" />
-    <ClInclude Include="src\Core\EventDispatcher.h" />
-    <ClInclude Include="src\Core\Log.h" />
-    <ClInclude Include="src\Core\StepTimer.h" />
-    <ClInclude Include="src\Core\Utils.h" />
-    <ClInclude Include="src\Graphics\D3D11\Buffer.h" />
-    <ClInclude Include="src\Graphics\D3D11\GraphicsDevice.h" />
-    <ClInclude Include="src\Graphics\D3D11\Shader.h" />
-    <ClInclude Include="src\Graphics\D3D11\Utils.h" />
-    <ClInclude Include="src\Graphics\D3D11\VertexTypes.h" />
-    <ClInclude Include="src\Graphics\Geometry.h" />
-    <ClInclude Include="src\ImGui\ImGuiRenderer.h" />
-    <ClInclude Include="src\Input\Input.h" />
-    <ClInclude Include="src\Input\Keyboard.h" />
-    <ClInclude Include="src\Input\Mouse.h" />
-    <ClInclude Include="src\Math\Bezier.h" />
-    <ClInclude Include="src\Math\Math.h" />
-    <ClInclude Include="src\pch.h" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Rot.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core\Application.cpp" />
-    <ClCompile Include="src\Graphics\D3D11\Buffer.cpp" />
-    <ClCompile Include="src\Graphics\D3D11\GraphicsDevice.cpp" />
-    <ClCompile Include="src\Graphics\D3D11\Shader.cpp" />
-    <ClCompile Include="src\Graphics\D3D11\VertexTypes.cpp" />
-    <ClCompile Include="src\Graphics\Geometry.cpp" />
-    <ClCompile Include="src\ImGui\ImGuiRenderer.cpp" />
-    <ClCompile Include="src\Input\Input.cpp" />
-    <ClCompile Include="src\Input\Keyboard.cpp" />
-    <ClCompile Include="src\Input\Mouse.cpp" />
-    <ClCompile Include="src\pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Ship|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Ship|x64'">
-      </PrecompiledHeaderFile>
-    </ClCompile>
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Globals.h" />
+    <ClInclude Include="src\Rot.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\Graphics\TeapotData.inc" />
+    <ProjectReference Include="..\Anxiety\Anxiety.vcxproj">
+      <Project>{f45571f0-4a9f-4aaa-ac4b-714588d25a4a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ImGui\ImGui.vcxproj">
+      <Project>{7337d722-f250-497c-8d2a-22a9b376a62e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\Light.hlsl">
@@ -208,6 +177,11 @@
       <FileType>Document</FileType>
     </None>
     <None Include="res\Shaders\PositionNormalTexture.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\Test.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

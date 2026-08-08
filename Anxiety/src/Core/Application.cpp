@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "Application.h"
 
@@ -30,7 +30,7 @@ Application::~Application()
     ANX_INFO("Application dector\n");
 }
 
-SDL_AppResult Application::Init(const ApplicationOptions& options)
+SDL_AppResult Application::Init(const APPLICATION_DESC& desc)
 {
     ANX_INFO("Application init\n");
 
@@ -45,9 +45,9 @@ SDL_AppResult Application::Init(const ApplicationOptions& options)
     }
 
     _window = SDL_CreateWindow(
-        options.Title.c_str(),
-        options.Width, options.Height,
-        options.WindowFlags);
+        desc.Title.c_str(),
+        desc.Width, desc.Height,
+        desc.WindowFlags);
     if (!_window)
     {
         throw std::runtime_error{ std::format("Couldn't create window: {}", SDL_GetError()) };
@@ -56,8 +56,8 @@ SDL_AppResult Application::Init(const ApplicationOptions& options)
     _graphicsDevice = new GraphicsDevice
     {
         SDL_GetPointerProperty(SDL_GetWindowProperties(_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr),
-        options.Width, options.Height,
-        (options.WindowFlags & SDL_WINDOW_FULLSCREEN) != SDL_WINDOW_FULLSCREEN
+        desc.Width, desc.Height,
+        (desc.WindowFlags & SDL_WINDOW_FULLSCREEN) != SDL_WINDOW_FULLSCREEN
     };
 
     _graphicsDevice->SetClearColor(Anx::Colors::VeryDarkGray);
@@ -73,8 +73,10 @@ SDL_AppResult Application::Init(const ApplicationOptions& options)
     Mouse::Init();
     Mouse::SetWindow(_window);
 
+#ifndef ANX_SHIP
     // ImGui
     _imGuiRenderer = new ImGuiRenderer(_window, _graphicsDevice);
+#endif // !ANX_SHIP
 
     Startup();
 
@@ -87,11 +89,13 @@ SDL_AppResult Application::Shutdown()
 
     ANX_INFO("Application shutdown\n");
 
+#ifndef ANX_SHIP
     if (_imGuiRenderer)
     {
         delete _imGuiRenderer;
         _imGuiRenderer = nullptr;
     }
+#endif // !ANX_SHIP
 
     Keyboard::Shutdown();
     Mouse::Shutdown();
@@ -115,7 +119,10 @@ SDL_AppResult Application::HandleEvent(SDL_Event* event)
     EventDispatcher dispatcher{ *event };
     dispatcher.Dispatch(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, ANX_BIND_CALLBACK(OnResize));
 
+#ifndef ANX_SHIP
     _imGuiRenderer->OnEvent(*event);
+#endif // !ANX_SHIP
+
     OnEvent(*event);
 
     return SDL_APP_CONTINUE;
@@ -136,9 +143,11 @@ SDL_AppResult Application::Frame()
 
     Render();
 
+#ifndef ANX_SHIP
     _imGuiRenderer->Begin();
     RenderEditor();
     _imGuiRenderer->End();
+#endif // !ANX_SHIP
 
     _graphicsDevice->Present();
 

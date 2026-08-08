@@ -1,10 +1,10 @@
-#include "stdafx.h"
-
 #include "Camera.h"
+
+#include "Globals.h"
 
 using namespace DirectX;
 
-namespace Anx {
+namespace Rot {
 
 Camera::Camera(DirectX::FXMVECTOR position, float fov, float aspectRatio, float nearZ, float farZ)
     : _fov{ fov }

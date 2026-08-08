@@ -1,18 +1,22 @@
 #pragma once
 
-#include <DirectXMath.h>
+#include <Anxiety.h>
 
-#include "Core/Application.h"
-#include "Core/Camera.h"
-#include "Core/Utils.h"
-#include "Graphics/D3D11/Shader.h"
-#include "Graphics/D3D11/Buffer.h"
+#include "Camera.h"
 
-class Game : public Anx::Application
+namespace Rot {
+
+class Rot : public Anx::Application
 {
 public:
-    Game();
-    ~Game() override;
+    Rot();
+    ~Rot() override;
+
+    Rot(Rot&&) = delete;
+    Rot& operator=(Rot&&) = delete;
+
+    Rot(const Rot&) = delete;
+    Rot& operator=(const Rot&) = delete;
 
 protected:
     void Startup() override;
@@ -22,7 +26,10 @@ protected:
 
     void Update(float deltaTime) override;
     void Render() override;
+
+#ifndef ANX_SHIP
     void RenderEditor() override;
+#endif // !ANX_SHIP
 
 private:
     void OnResize(const SDL_Event& event);
@@ -30,6 +37,7 @@ private:
 
 private:
     Anx::GraphicsDevice* _graphicsDevice{ nullptr };
+    const Anx::StepTimer* _timer{ nullptr };
 
     struct CBPerObjectData
     {
@@ -47,7 +55,7 @@ private:
         float Pad0{};
     };
 
-    Anx::FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f };
+    FreeCamera _camera{ DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), DirectX::XM_PIDIV4, 960.0f / 720.0f };
 
     Anx::Unique<Anx::Shader> _posColShader{};
     Anx::Unique<Anx::Shader> _posNormTexShader{};
@@ -74,3 +82,6 @@ private:
     Anx::Unique<Anx::IndexBuffer> _tpIB{};
     DirectX::XMFLOAT4X4 _tpModel{};
 };
+
+
+}

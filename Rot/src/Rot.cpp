@@ -1,33 +1,28 @@
-#include "stdafx.h"
+#include "Rot.h"
 
-#include "Game.h"
-
-#include "Core/Utils.h"
-#include "Core/Log.h"
-#include "Core/EventDispatcher.h"
-#include "Graphics/D3D11/VertexTypes.h"
-#include "Graphics/Geometry.h"
-#include "Math/Math.h"
-
+#include <format>
 
 using namespace DirectX;
 using namespace Anx;
 
-Game::Game()
+namespace Rot {
+
+Rot::Rot()
 {
-    ANX_INFO("Game ctor\n");
+    ANX_INFO("Rot ctor\n");
 }
 
-Game::~Game()
+Rot::~Rot()
 {
-    ANX_INFO("Game dector\n");
+    ANX_INFO("Rot dector\n");
 }
 
-void Game::Startup()
+void Rot::Startup()
 {
-    ANX_INFO("Game startup\n");
+    ANX_INFO("Rot startup\n");
 
-    _graphicsDevice = Application::GetGraphicsDevice();
+    _graphicsDevice = GetGraphicsDevice();
+    _timer = &GetTimer();
 
     // Shaders
     _posColShader = CreateUnique<Shader>(_graphicsDevice, L"res/Shaders/PositionColor.hlsl", VertexPositionColor::InputElements, VertexPositionColor::InputElementCount);
@@ -55,19 +50,19 @@ void Game::Startup()
     _tpIB = CreateUnique<IndexBuffer>(_graphicsDevice, static_cast<uint32_t>(sizeof(uint16_t) * indices.size()), indices.data());
 }
 
-void Game::Cleanup()
+void Rot::Cleanup()
 {
-    ANX_INFO("Game cleanup\n");
+    ANX_INFO("Rot cleanup\n");
 }
 
-void Game::OnEvent(const SDL_Event& event)
+void Rot::OnEvent(const SDL_Event& event)
 {
     EventDispatcher dispatcher{ event };
     dispatcher.Dispatch(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, ANX_BIND_CALLBACK(OnResize));
     dispatcher.Dispatch(SDL_EVENT_KEY_DOWN, ANX_BIND_CALLBACK(OnKeyDown));
 }
 
-void Game::OnResize(const SDL_Event& event)
+void Rot::OnResize(const SDL_Event& event)
 {
     const SDL_WindowEvent& window = event.window;
 
@@ -80,7 +75,7 @@ void Game::OnResize(const SDL_Event& event)
     }
 }
 
-void Game::OnKeyDown(const SDL_Event& event)
+void Rot::OnKeyDown(const SDL_Event& event)
 {
     const SDL_KeyboardEvent& key = event.key;
     if (key.scancode == SDL_SCANCODE_ESCAPE)
@@ -91,7 +86,7 @@ void Game::OnKeyDown(const SDL_Event& event)
     }
 }
 
-void Game::Update(float deltaTime)
+void Rot::Update(float deltaTime)
 {
     // Fps counter
 
@@ -175,7 +170,7 @@ void Game::Update(float deltaTime)
     XMStoreFloat4x4(&_tpModel, tpModel);
 }
 
-void Game::Render()
+void Rot::Render()
 {
     auto context = _graphicsDevice->GetContext();
 
@@ -249,6 +244,14 @@ void Game::Render()
     context->DrawIndexed(_tpIndexCount, 0, 0);
 }
 
-void Game::RenderEditor()
+#ifndef ANX_SHIP
+void Rot::RenderEditor()
 {
+    ImGui::Begin("Stats");
+    std::string text = std::format("FPS: {}", _timer->GetFramesPerSecond());
+    ImGui::Text(text.c_str());
+    ImGui::End();
+}
+#endif // !ANX_SHIP
+
 }

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "Keyboard.h"
 
@@ -10,7 +10,7 @@ bool* Keyboard::s_PrevState;
 
 void Keyboard::Init()
 {
-    auto state = SDL_GetKeyboardState(&s_NumKeys);
+    SDL_GetKeyboardState(&s_NumKeys);
     s_CurrState = new bool[s_NumKeys] {false};
     s_PrevState = new bool[s_NumKeys] {false};
 }

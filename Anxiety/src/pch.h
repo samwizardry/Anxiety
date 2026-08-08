@@ -23,7 +23,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-// Vendor
+// Third party
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -40,3 +40,7 @@
 #include <DirectXColors.h>
 
 #include <SDL3/SDL.h>
+
+#include <imgui.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_dx11.h>

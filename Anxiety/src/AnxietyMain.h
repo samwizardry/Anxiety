@@ -1,11 +1,14 @@
-#include "stdafx.h"
+#pragma once
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "Game.h"
+#include "Core/Application.h"
 #include "Core/Log.h"
+
+extern Anx::Application* Anx::CreateApplication();
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
@@ -16,12 +19,12 @@ SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_un
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    auto app = new Game();
+    auto app = Anx::CreateApplication();
     *appstate = app;
 
     SDL_AppResult result{ SDL_APP_FAILURE };
 
-    Anx::ApplicationOptions options{};
+    Anx::APPLICATION_DESC options{};
     options.WindowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
 
     try

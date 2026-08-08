@@ -6,11 +6,14 @@
 #include "../Graphics/D3D11/GraphicsDevice.h"
 #include "../Input/Keyboard.h"
 #include "../Input/Mouse.h"
+
+#ifndef ANX_SHIP
 #include "../ImGui/ImGuiRenderer.h"
+#endif // !ANX_SHIP
 
 namespace Anx {
 
-struct ApplicationOptions
+struct APPLICATION_DESC
 {
     std::string Title{ "Anxiety" };
     int Width{ 960 };
@@ -37,7 +40,7 @@ public:
     /// <summary>
     /// This function runs once at startup.
     /// </summary>
-    SDL_AppResult Init(const ApplicationOptions& options);
+    SDL_AppResult Init(const APPLICATION_DESC& desc);
 
     /// <summary>
     /// This function runs once at shutdown.
@@ -67,6 +70,8 @@ public:
     //--------------------------------------------------------------------------------------
     const StepTimer& GetTimer() const { return _timer; }
 
+    static Application* CreateApplication();
+
 protected:
     virtual void Startup() = 0;
     virtual void Cleanup() = 0;
@@ -75,7 +80,10 @@ protected:
 
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
+
+#ifndef ANX_SHIP
     virtual void RenderEditor() = 0;
+#endif // !ANX_SHIP
 
 private:
     //--------------------------------------------------------------------------------------
@@ -96,7 +104,12 @@ private:
     // Application systems
     //--------------------------------------------------------------------------------------
     StepTimer _timer{};
+
+#ifndef ANX_SHIP
     ImGuiRenderer* _imGuiRenderer{};
+#endif // !ANX_SHIP
 };
+
+Application* CreateApplication();
 
 }
